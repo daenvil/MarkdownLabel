@@ -18,6 +18,7 @@ A custom [Godot](https://godotengine.org/) node that extends [RichTextLabel](htt
 - [Limitations](#limitations)
   - [Unsupported syntax elements](#unsupported-syntax-elements)
   - [Performance](#performance)
+- [Acknowledgements](#acknowledgements)
 
 ## Disclaimer
 
@@ -27,11 +28,11 @@ I coded this quickly and without previous knowledge of how to parse Markdown pro
 
 I might convert this to C++ code at some point, to improve performance.
 
-### Intended usecase
+### Intended use case
 
 This node is very useful for static text that you want to display in your application. It's not recommended to use this for text which is dynamically modified at run time.
 
-My initial usecase that lead me to do this was to directly include text from files in my game, such as credits and patch notes, in a format that is easier to mantain for me. This has the added benefit of being able to use the same Markdown files that are displayed in a github repository, instead of having to make two versions of the same text in two different formats.
+My initial use case that lead me to do this was to directly include text from files in my game, such as credits and patch notes, in a format that is easier to mantain for me. This has the added benefit of being able to use the same Markdown files that are displayed in a github repository, instead of having to make two versions of the same text in two different formats.
 
 ## Installation
 
