@@ -21,11 +21,9 @@ A custom [Godot](https://godotengine.org/) node that extends [RichTextLabel](htt
 
 ## Disclaimer
 
-**This is a work in progress**. I didn't fully test it yet and may have bugs and performance issues.
+**This is a work in progress**. I created this for my own use and figured out someone else might as well have some use for it. Obviously using BBCode will be better performance-wise since it's natively integrated in Godot. But using Markdown is much easier to write and read, so it can save development time in many cases.
 
-I created this for my own use and figured out someone else might as well have some use for it. Obviously using BBCode will be better performance-wise since it's natively integrated in Godot. But using Markdown is much easier to write and read, so it can save development time in many cases.
-
-I coded this quickly and without previous knowledge of how to parse Markdown properly, so there might be some inefficiencies and bugs.
+I coded this quickly and without previous knowledge of how to parse Markdown properly, so there might be some inefficiencies and bugs. Please report any unexpected behavior.
 
 I might convert this to C++ code at some point, to improve performance.
 
@@ -91,7 +89,7 @@ multiline codeblock  .......... -> multiline codeblock
 
 ### Headers
 
-Godot doesn't support BBCode headers, but MarkdownLabel contains a basic implementation of headers. By default, a line defined as a header will have its font size scaled by a pre-defined amount.
+MarkdownLabel supports headers, although RichTextLabel doesn't. By default, a line defined as a header will have its font size scaled by a pre-defined amount.
 
 To define a line as a header, begin it with any number of consecutive hash symbols (#) and follow it with the title of your header. The number of hash symbols defines the level of the header. The maximum supported level is six..
 
@@ -118,7 +116,7 @@ Links follow the standard Markdown syntax of `[text to display](example.com)`. A
 
 "Autolinks" are also supported with their standard syntax: `<example.com>`, and `<mail@example.com>` for mail autolinks.
 
-Keep in mind that, in Godot, **links do nothing by default**. See the [RichTextLabel reference](https://docs.godotengine.org/en/stable/tutorials/ui/bbcode_in_richtextlabel.html#doc-bbcode-in-richtextlabel-handling-url-tag-clicks) for more info.
+Keep in mind that, in Godot, **links do nothing by default**. MarkdownLabel treats them the say way (may be changed in the future). See the [RichTextLabel reference](https://docs.godotengine.org/en/stable/tutorials/ui/bbcode_in_richtextlabel.html#doc-bbcode-in-richtextlabel-handling-url-tag-clicks) for more info.
 
 ```
 Markdown text .............................. -> BBCode equivalent
@@ -245,3 +243,7 @@ The following Markdown syntax elements are not supported because Godot's BBCode 
 ### Performance
 
 This node basically parses the whole text, converting it from Markdown to BBCode at runtime, so it may produce performance issues with some extreme usages, such as very large and heavily-formatted texts or updating a heavily-formatted text very frequently. That already can happen with BBCode, though, so in that case, you are probably better off [using RichTextLabel's functions](https://docs.godotengine.org/en/stable/tutorials/ui/bbcode_in_richtextlabel.html#using-push-tag-and-pop-functions-instead-of-bbcode) instead of writing the formatting directly in-text.
+
+### Acknowledgements
+
+The syntax and implementation of MarkdownLabel is largely based on [Github-flavored Markdown](https://github.github.com/gfm/) and [CommonMark](https://commonmark.org/), with its own quirks to accomodate it within [Godot's RichTextLabel BBCode](https://docs.godotengine.org/en/stable/tutorials/ui/bbcode_in_richtextlabel.html).
