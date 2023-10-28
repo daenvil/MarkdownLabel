@@ -1,0 +1,197 @@
+[
+	{
+		"input": "**foo** __bar__",
+		"output": "[b]foo[/b] [b]bar[/b]",
+		"title": "Basic bold"
+	},
+	{
+		"input": "*foo* _bar_",
+		"output": "[i]foo[/i] [i]bar[/i]",
+		"title": "Basic italics"
+	},
+	{
+		"input": "***foo*** ___bar___ *__foo__* **_bar_** **foo *bar*** _foo __bar___",
+		"output": "[b][i]foo[/i][/b] [b][i]bar[/i][/b] [i][b]foo[/b][/i] [b][i]bar[/i][/b] [b]foo [i]bar[/i][/b] [i]foo [b]bar[/b][/i]",
+		"title": "Mixed formatting"
+	},
+	{
+		"input": "*foo**bar**baz*",
+		"output": "[i]foo[b]bar[/b]baz[/i]",
+		"title": "Nested emphasis ambiguity"
+	},
+	{
+		"input": "_foo*",
+		"output": "_foo*",
+		"title": "Mismatched emphasis markers"
+	},
+	{
+		"input": "~~foo~~",
+		"output": "[s]foo[/s]",
+		"title": "Basic strikethrough"
+	},
+	{
+		"input": "`foo`",
+		"output": "[code]foo[/code]",
+		"title": "Basic inline code"
+	},
+	{
+		"input": "``foo`` ```bar``baz```",
+		"output": "[code]foo[/code] [code]bar``baz[/code]",
+		"title": "Unconventional inline code"
+	},
+	{
+		"input": "[foo](bar)",
+		"output": "[url=bar]foo[/url]",
+		"title": "Basic link"
+	},
+	{
+		"input": "[foo](bar \"baz\")",
+		"output": "[hint=baz][url=bar]foo[/url][/hint]",
+		"title": "Basic link with title"
+	},
+	{
+		"input": "<foo_bar.baz>",
+		"output": "[url]foo_bar.baz[/url]",
+		"title": "Basic autolink"
+	},
+	{
+		"input": "<foo@bar.baz>",
+		"output": "[url=mailto:foo@bar.baz]foo@bar.baz[/url]",
+		"title": "Mail autolink"
+	},
+	{
+		"input": "![foo](bar)",
+		"output": "[img]bar[/img]",
+		"title": "Image basic syntax"
+	},
+	{
+		"input": "![foo](bar_baz.png \"foo\")",
+		"output": "[hint=foo][img]bar_baz.png[/img][/hint]",
+		"title": "Image with tooltip"
+	},
+	{
+		"input": "# Foo\n##Bar\n######  *Baz*\n####### foo",
+		"output": "[font_size=36]Foo[/font_size]\n[font_size=27]Bar[/font_size]\n[font_size=13][i]Baz[/i][/font_size]\n[font_size=13]# foo[/font_size]",
+		"title": "Basic headers"
+	},
+	{
+		"input": "```\nfoo\nbar\n```\n~~~\nfoo\nbar\n~~~",
+		"output": "[code]\nfoo\nbar[/code]\n[code]\nfoo\nbar[/code]",
+		"title": "Basic fenced code blocks"
+	},
+	{
+		"input": "````\nfoo\nbar\n```\n`````\n   ~~~\nfoo\nbar\n~~~",
+		"output": "[code]\nfoo\nbar\n```[/code]\n[code]\nfoo\nbar[/code]",
+		"title": "Unconventional fenced code blocks"
+	},
+	{
+		"input": "- foo\n- bar\n  - baz\n\n1. foo\n2. bar\n  1. baz",
+		"output": "[ul]foo\nbar\n[ul]baz\n[/ul][/ul]\n\n[ol]foo\nbar\n[ol]baz[/ol][/ol]",
+		"title": "Basic lists"
+	},
+	{
+		"input": "- foo\n- bar\n  1. baz\n\n1. foo\n2. bar\n  * baz",
+		"output": "[ul]foo\nbar\n[ol]baz\n[/ol][/ul]\n\n[ol]foo\nbar\n[ul]baz[/ul][/ol]",
+		"title": "Mixed lists"
+	},
+	{
+		"input": "- foo\n- bar\n\t\nbaz",
+		"output": "[ul]foo\nbar\n[/ul]\n\t\nbaz",
+		"title": "List followed by indented line"
+	},
+	{
+		"input": "*\\*foo** bar\\*\nfoo\\_bar _\\_baz_",
+		"output": "[i]*foo[/i]* bar*\nfoo_bar [i]_baz[/i]",
+		"title": "Escaping asterisks and underscores"
+	},
+	{
+		"input": "\\\~~foo~~\n\\\~\~\~\nbar\n\~\~\\\~",
+		"output": "\~\~foo\~\~\n\~\~\~\nbar\n\~\~\~",
+		"title": "Escaping tildes"
+	},
+	{
+		"input": "\\`foo`\n\\```\nbar\n``\\`",
+		"output": "`foo`\n```\nbar\n```",
+		"title": "Escaping backticks"
+	},
+	{
+		"input": "\\[foo](bar) [foo\\](bar) [foo]\\(bar) [foo](bar\\) \\<foo> <bar\\>",
+		"output": "[foo](bar) [foo](bar) [foo](bar) [foo](bar) <foo> <bar>",
+		"title": "Escaping links"
+	},
+	{
+		"input": "[foo](bar_baz.com) [foo](bar\\_baz.com)",
+		"output": "[url=bar_baz.com]foo[/url] [url=bar_baz.com]foo[/url]",
+		"title": "Special characters inside a url"
+	},
+	{
+		"input": "[**foo**](bar) **[foo](bar)**",
+		"output": "[url=bar][b]foo[/b][/url] [b][url=bar]foo[/url][/b]",
+		"title": "Formatting links"
+	},
+	{
+		"input": "\\![foo](bar) !\\[foo](bar) ![foo]\\(bar)",
+		"output": "![url=bar]foo[/url] ![foo](bar) ![foo](bar)",
+		"title": "Escaping images"
+	},
+	{
+		"input": "\\# Foo\n#\\#Bar",
+		"output": "# Foo\n[font_size=36]#Bar[/font_size]",
+		"title": "Ecaping headers"
+	},
+	{
+		"input": "\\- foo\n- bar\n  - baz\n\n1\\. foo\n1. bar\n  1. baz",
+		"output": "- foo\n[ul]bar\n[ul]baz\n[/ul][/ul]\n\n1. foo\n[ol]bar\n[ol]baz[/ol][/ol]",
+		"title": "Escaping lists"
+	},
+	{
+		"input": "\\\\*foo* [foo](bar\\\\baz)",
+		"output": "\\[i]foo[/i] [url=bar\\baz]foo[/url]",
+		"title": "Escaping backslashses"
+	},
+	{
+		"input": "`*foo* ~~bar~~ \\*baz`",
+		"output": "[code]*foo* ~~bar~~ \\*baz[/code]",
+		"title": "Syntax inside in-line code"
+	},
+	{
+		"input": "```\n*foo* ~~bar~~ \\*baz\n```",
+		"output": "[code]\n*foo* ~~bar~~ \\*baz[/code]",
+		"title": "Syntax inside fenced code"
+	},
+	{
+		"input": "`[b]foo[/b]`",
+		"output": "[code][lb]b[rb]foo[lb]/b[rb][/code]",
+		"title": "BBCode inside in-line code"
+	},
+	{
+		"input": "```\n[b]foo[/b]\n```",
+		"output": "[code]\n[lb]b[rb]foo[lb]/b[rb][/code]",
+		"title": "BBCode inside fenced code"
+	},
+	{
+		"input": "`foo`bar`",
+		"output": "[code]foo[/code]bar`",
+		"title": "Uneven backticks in same line"
+	},
+	{
+		"input": "[not a `link](/foo`)",
+		"output": "[not a [code]link[rb](/foo[/code])",
+		"title": "In-line code within a link"
+	},
+	{
+		"input": "| foo | bar |\n| --- | --- |\n| baz | baz |",
+		"output": "[table=2]\n[cell]foo[/cell][cell]bar[/cell]\n[cell]baz[/cell][cell]baz[/cell]\n[/table]",
+		"title": "Basic table"
+	},
+	{
+		"input": "| foo | bar |\n| --- | --- |\n| baz | baz |\nfoo",
+		"output": "[table=2]\n[cell]foo[/cell][cell]bar[/cell]\n[cell]baz[/cell][cell]baz[/cell]\n[/table]\nfoo",
+		"title": "Table followed by text"
+	},
+	{
+		"input": "| **foo** | *bar* |\n| ~~baz~~ | ``baz`` |",
+		"output": "[table=2]\n[cell][b]foo[/b][/cell][cell][i]bar[/i][/cell]\n[cell][s]baz[/s][/cell][cell][code]baz[/code][/cell]\n[/table]",
+		"title": "Table without demiliter row and with in-line formatting"
+	},
+]

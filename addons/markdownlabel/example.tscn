@@ -1,0 +1,77 @@
+[gd_scene load_steps=15 format=3 uid="uid://bka0d50qmnb8y"]
+
+[ext_resource type="Script" path="res://addons/markdownlabel/example.gd" id="1_7b8dd"]
+[ext_resource type="Script" path="res://addons/markdownlabel/markdownlabel.gd" id="2_opcio"]
+[ext_resource type="Script" path="res://addons/markdownlabel/header_formats/h1_format.gd" id="3_kbjha"]
+[ext_resource type="Script" path="res://addons/markdownlabel/header_formats/h2_format.gd" id="4_tqhuu"]
+[ext_resource type="Script" path="res://addons/markdownlabel/header_formats/h3_format.gd" id="5_us0p7"]
+[ext_resource type="Script" path="res://addons/markdownlabel/header_formats/h4_format.gd" id="6_8ublj"]
+[ext_resource type="Script" path="res://addons/markdownlabel/header_formats/h5_format.gd" id="7_42de6"]
+[ext_resource type="Script" path="res://addons/markdownlabel/header_formats/h6_format.gd" id="8_y8fds"]
+
+[sub_resource type="Resource" id="Resource_r7ev3"]
+script = ExtResource("3_kbjha")
+font_size = 2.285
+is_bold = false
+is_italic = false
+is_underlined = false
+
+[sub_resource type="Resource" id="Resource_qh6ic"]
+script = ExtResource("4_tqhuu")
+font_size = 1.714
+is_bold = false
+is_italic = false
+is_underlined = false
+
+[sub_resource type="Resource" id="Resource_qx73p"]
+script = ExtResource("5_us0p7")
+font_size = 1.428
+is_bold = false
+is_italic = false
+is_underlined = false
+
+[sub_resource type="Resource" id="Resource_yx0wh"]
+script = ExtResource("6_8ublj")
+font_size = 1.142
+is_bold = false
+is_italic = false
+is_underlined = false
+
+[sub_resource type="Resource" id="Resource_1ovcl"]
+script = ExtResource("7_42de6")
+font_size = 1.0
+is_bold = false
+is_italic = false
+is_underlined = false
+
+[sub_resource type="Resource" id="Resource_fj0e0"]
+script = ExtResource("8_y8fds")
+font_size = 0.857
+is_bold = false
+is_italic = false
+is_underlined = false
+
+[node name="Example" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_7b8dd")
+
+[node name="MarkdownLabel" type="RichTextLabel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+bbcode_enabled = true
+script = ExtResource("2_opcio")
+h1 = SubResource("Resource_r7ev3")
+h2 = SubResource("Resource_qh6ic")
+h3 = SubResource("Resource_qx73p")
+h4 = SubResource("Resource_yx0wh")
+h5 = SubResource("Resource_1ovcl")
+h6 = SubResource("Resource_fj0e0")
