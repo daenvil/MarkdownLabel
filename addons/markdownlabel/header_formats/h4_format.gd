@@ -12,6 +12,9 @@ extends Resource
 
 signal _updated
 
+func _init() -> void:
+	resource_local_to_scene = true
+
 func _set_font_size(new_font_size: float) -> void:
 	font_size = new_font_size
 	_updated.emit()

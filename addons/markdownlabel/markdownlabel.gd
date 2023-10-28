@@ -53,12 +53,18 @@ func _init(markdown_text: String = "") -> void:
 	self.markdown_text = markdown_text
 	
 func _ready() -> void:
-	h1._updated.connect(_update)
-	h2._updated.connect(_update)
-	h3._updated.connect(_update)
-	h4._updated.connect(_update)
-	h5._updated.connect(_update)
-	h6._updated.connect(_update)
+	h1.connect("_updated",_update)
+	h1.connect("changed",_update)
+	h2.connect("_updated",_update)
+	h2.connect("changed",_update)
+	h3.connect("_updated",_update)
+	h3.connect("changed",_update)
+	h4.connect("_updated",_update)
+	h4.connect("changed",_update)
+	h5.connect("_updated",_update)
+	h5.connect("changed",_update)
+	h6.connect("_updated",_update)
+	h6.connect("changed",_update)
 	if Engine.is_editor_hint():
 		bbcode_enabled = true
 	#else:
