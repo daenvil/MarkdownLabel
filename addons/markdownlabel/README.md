@@ -58,7 +58,6 @@ You can still use BBCode tags that don't have a Markdown equivalent, such as `[c
 ### Basic syntax
 
 The basic Markdown syntax works in the standard way:
-
 ```
 Markdown text ................ -> BBCode equivalent
 -------------------------------||------------------
@@ -113,19 +112,24 @@ Of course, you can also use basic formatting within the headers (e.g. `### Heade
 
 ### Links
 
-Links follow the standard Markdown syntax of `[text to display](example.com)`. Additionally, you can add tooltips to your links with `[text to display](example.com "Some tooltip")`.
+Links follow the standard Markdown syntax of `[text to display](https://example.com)`. Additionally, you can add tooltips to your links with `[text to display](https://example.com "Some tooltip")`.
 
-"Autolinks" are also supported with their standard syntax: `<example.com>`, and `<mail@example.com>` for mail autolinks.
+"Autolinks" are also supported with their standard syntax: `<https://example.com>`, and `<mail@example.com>` for mail autolinks.
 
-Keep in mind that, in Godot, **links do nothing by default**. MarkdownLabel treats them the say way (may be changed in the future). See the [RichTextLabel reference](https://docs.godotengine.org/en/stable/tutorials/ui/bbcode_in_richtextlabel.html#doc-bbcode-in-richtextlabel-handling-url-tag-clicks) for more info.
+Links created this way will be automatically handled by MarkdownLabel, implemented their expected behaviour:
+
+- Valid header anchors (such as the ones in [Contents](#contents)) will make MarkdownLabel scroll to their header's position.
+- Valid URLs and emails will be opened according to the user's settings (usually, using their default browser).
+
+This behavior can be disabled using the `automatic_links` property (enabled by default).
 
 ```
 Markdown text .............................. -> BBCode equivalent
 ---------------------------------------------||------------------
-[this is a link](example.com) .............. -> [url=example.com]this is a link[/url]
-[this is a link](example.com "Example page") -> [hint=Example url][url=example.com]this is a link[/url][/hint]
-<example.com> .............................. -> [url]example.com[/url]
-<mail@example.com> ......................... -> [url=mailto:mail@example.com]mail@example.com[/url]
+[this is a link](https://example.com) .............. -> [url=https://example.com]this is a link[/url]
+[this is a link](https://example.com "Example page") -> [hint=Example url][url=https://example.com]this is a link[/url][/hint]
+<https://example.com> .............................. -> [url]https://example.com[/url]
+<mail@example.com> ................................. -> [url=mailto:mail@example.com]mail@example.com[/url]
 ```
 
 ### Images
