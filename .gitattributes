@@ -3,5 +3,6 @@
 /LICENSE export-ignore
 /README.md export-ignore
 /icon.png export-ignore
+/tests export-ignore
 /tests/test_cases.json export-ignore
 /tests/test_main.gd export-ignore
