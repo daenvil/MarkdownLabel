@@ -46,8 +46,7 @@ My initial use case that lead me to do this was to directly include text from fi
 Simply add a MarkdownLabel to the scene and write its `markdown_text` field in Markdown format.
 
 In the RichTextLabel properties:
-- **`bbcode_enabled` property must be enabled**.
-- Do not touch the `text` property, since it's internally used by MarkdownLabel to properly format its text.
+- Do not touch neither the `bbcode_enabled` nor the `text` property, since they are internally used by MarkdownLabel to properly format its text. Both properties are hidden from the editor to prevent mistakenly editing them.
 - You can use the rest of its properties as normal.
 
 You can still use BBCode tags that don't have a Markdown equivalent, such as `[color=green]underlined text[/color]`, allowing you to have the full functionality of RichTextLabel with the simplicity and readibility of Markdown.
@@ -91,7 +90,7 @@ multiline codeblock  .......... -> multiline codeblock
 
 MarkdownLabel supports headers, although RichTextLabel doesn't. By default, a line defined as a header will have its font size scaled by a pre-defined amount.
 
-To define a line as a header, begin it with any number of consecutive hash symbols (#) and follow it with the title of your header. The number of hash symbols defines the level of the header. The maximum supported level is six..
+To define a line as a header, begin it with any number of consecutive hash symbols (#) and follow it with the title of your header. The number of hash symbols defines the level of the header. The maximum supported level is six.
 
 Example:
 ```
@@ -120,6 +119,7 @@ Links created this way will be automatically handled by MarkdownLabel, implement
 
 - Valid header anchors (such as the ones in [Contents](#contents)) will make MarkdownLabel scroll to their header's position.
 - Valid URLs and emails will be opened according to the user's settings (usually, using their default browser).
+- Links that do not match any of the above conditions will be interpreted as a URL by prefixing them with "https://". E.g. `[link](example.com)` will link to "https://example.com".
 
 This behavior can be disabled using the `automatic_links` property (enabled by default).
 

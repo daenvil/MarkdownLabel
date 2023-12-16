@@ -47,7 +47,8 @@ var _converted_text: String
 var _indent_level: int
 var _escaped_characters_map := {}
 var _current_paragraph: int = 0
-var _header_ref_paragraph := {}
+var _header_anchor_paragraph := {}
+var _header_anchor_count := {}
 var _within_table := false
 var _table_row := -1
 var _line_break := true
@@ -84,28 +85,30 @@ func _on_meta_clicked(meta: Variant) -> void:
 		return
 	if typeof(meta) != TYPE_STRING:
 		return
-	if meta.begins_with("#") and meta in _header_ref_paragraph:
-		self.scroll_to_paragraph(_header_ref_paragraph[meta])
-	else:
-		var url_pattern := RegEx.new()
-		url_pattern.compile("^(ftp|http|https):\\/\\/[^\\s\\\"]+$")
-		var result := url_pattern.search(meta)
-		if not result:
-			url_pattern.compile("^mailto:[^\\s]+@[^\\s]+\\.[^\\s]+$")
-			result = url_pattern.search(meta)
-		if result:
-			OS.shell_open(meta)
+	if meta.begins_with("#") and meta in _header_anchor_paragraph:
+		self.scroll_to_paragraph(_header_anchor_paragraph[meta])
+		return
+	var url_pattern := RegEx.new()
+	url_pattern.compile("^(ftp|http|https):\\/\\/[^\\s\\\"]+$")
+	var result := url_pattern.search(meta)
+	if not result:
+		url_pattern.compile("^mailto:[^\\s]+@[^\\s]+\\.[^\\s]+$")
+		result = url_pattern.search(meta)
+	if result:
+		OS.shell_open(meta)
+		return
+	OS.shell_open("https://" + meta)
 
-# Should hide properties in the editor, not working for some reason:
-#func _validate_property(property: Dictionary):
-#	print(property.name)
-#	if property.name in ["bbcode_enabled", "text"]:
-#		property.usage = PROPERTY_USAGE_NO_EDITOR
+func _validate_property(property: Dictionary):
+	# Hide these properties in the editor:
+	if property.name in ["bbcode_enabled", "text"]:
+		property.usage = PROPERTY_USAGE_NO_EDITOR
+
 #endregion
 
 #region Public methods:
 ## Reads the specified file and displays it as markdown.
-func display_file(file_path: String):
+func display_file(file_path: String) -> void:
 	markdown_text = FileAccess.get_file_as_string(file_path)
 #endregion
 
@@ -402,7 +405,7 @@ func _convert_markdown(source_text = "") -> String:
 				var _end := result.get_end()
 				_processed_line = _processed_line.insert(_end-(n+n_spaces)+opening_tags.length(),_get_header_tags(header_format,true))
 				_debug("... header level %d"%n)
-				_header_ref_paragraph[_get_header_reference(result.get_string())] = _current_paragraph
+				_header_anchor_paragraph[_get_header_reference(result.get_string())] = _current_paragraph
 			else:
 				break
 		
@@ -630,5 +633,12 @@ func _get_header_tags(header_format: Resource, closing := false) -> String:
 	return tags
 
 func _get_header_reference(header_string: String):
-	return "#" + header_string.lstrip("#").strip_edges().to_lower().replace(" ","-")
+	var anchor := "#" + header_string.lstrip("#").strip_edges().to_lower().replace(" ","-")
+	if anchor in _header_anchor_count:
+		_header_anchor_count[anchor] += 1
+		anchor += "-" + str(_header_anchor_count[anchor]-1)
+	else:
+		_header_anchor_count[anchor] = 1
+	return anchor
+
 #endregion
