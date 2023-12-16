@@ -20,9 +20,12 @@ const _ESCAPE_PLACEHOLDER := ";$\uFFFD:%s$;"
 const _ESCAPEABLE_CHARACTERS := "\\*_~`[]()\"<>#-+.!"
 const _ESCAPEABLE_CHARACTERS_REGEX := "[\\\\\\*\\_\\~`\\[\\]\\(\\)\\\"\\<\\>#\\-\\+\\.\\!]"
 
-# Public:
+#region Public:
 ## The text to be displayed in Markdown format.
 @export_multiline var markdown_text: String : set = _set_markdown_text
+
+## If enabled, links will be automatically handled by this node, without needing to manually connect them. Valid header anchors will make the label scroll to that header's position. Valid URLs and e-mails will be opened according to the user's default settings.
+@export var automatic_links := true
 
 @export_group("Header formats")
 ## Formatting options for level-1 headers
@@ -37,20 +40,27 @@ const _ESCAPEABLE_CHARACTERS_REGEX := "[\\\\\\*\\_\\~`\\[\\]\\(\\)\\\"\\<\\>#\\-
 @export var h5 := H5Format.new() : set = _set_h5_format
 ## Formatting options for level-6 headers
 @export var h6 := H6Format.new() : set = _set_h6_format
+#endregion
 
-# Private:
+#region Private:
 var _converted_text: String
 var _indent_level: int
 var _escaped_characters_map := {}
+var _current_paragraph: int = 0
+var _header_anchor_paragraph := {}
+var _header_anchor_count := {}
 var _within_table := false
 var _table_row := -1
 var _line_break := true
 var _debug_mode := false
+#endregion
 
-# Built-in methods:
+#region Built-in methods:
 func _init(markdown_text: String = "") -> void:
 	bbcode_enabled = true
 	self.markdown_text = markdown_text
+	if automatic_links:
+		meta_clicked.connect(_on_meta_clicked)
 	
 func _ready() -> void:
 	h1.connect("_updated",_update)
@@ -70,18 +80,39 @@ func _ready() -> void:
 	#else:
 		#pass
 
-# Should hide properties in the editor, not working for some reason:
-#func _validate_property(property: Dictionary):
-#	print(property.name)
-#	if property.name in ["bbcode_enabled", "text"]:
-#		property.usage = PROPERTY_USAGE_NO_EDITOR
+func _on_meta_clicked(meta: Variant) -> void:
+	if not automatic_links:
+		return
+	if typeof(meta) != TYPE_STRING:
+		return
+	if meta.begins_with("#") and meta in _header_anchor_paragraph:
+		self.scroll_to_paragraph(_header_anchor_paragraph[meta])
+		return
+	var url_pattern := RegEx.new()
+	url_pattern.compile("^(ftp|http|https):\\/\\/[^\\s\\\"]+$")
+	var result := url_pattern.search(meta)
+	if not result:
+		url_pattern.compile("^mailto:[^\\s]+@[^\\s]+\\.[^\\s]+$")
+		result = url_pattern.search(meta)
+	if result:
+		OS.shell_open(meta)
+		return
+	OS.shell_open("https://" + meta)
 
-# Public methods:
+func _validate_property(property: Dictionary):
+	# Hide these properties in the editor:
+	if property.name in ["bbcode_enabled", "text"]:
+		property.usage = PROPERTY_USAGE_NO_EDITOR
+
+#endregion
+
+#region Public methods:
 ## Reads the specified file and displays it as markdown.
-func display_file(file_path: String):
+func display_file(file_path: String) -> void:
 	markdown_text = FileAccess.get_file_as_string(file_path)
+#endregion
 
-#Private methods:
+#region Private methods:
 func _update() -> void:
 	text = _convert_markdown(markdown_text)
 	queue_redraw()
@@ -136,16 +167,18 @@ func _convert_markdown(source_text = "") -> String:
 	
 	for line in lines:
 		line = line.trim_suffix("\r")
-		_debug("Parsing line: '%s'"%line)
+		_debug("Parsing line: '%s'" % line)
 		within_code_block = within_tilde_block or within_backtick_block
 		if iline > 0 and _line_break:
 			_converted_text += "\n"
+			_current_paragraph += 1
 			_line_break = true
 		iline+=1
 		if not within_tilde_block and _denotes_fenced_code_block(line,"`"):
 			if within_backtick_block:
 				if line.strip_edges().length() >= current_code_block_char_count:
 					_converted_text = _converted_text.trim_suffix("\n")
+					_current_paragraph -= 1
 					_converted_text += "[/code]"
 					within_backtick_block = false
 					_debug("... closing backtick block")
@@ -160,6 +193,7 @@ func _convert_markdown(source_text = "") -> String:
 			if within_tilde_block:
 				if line.strip_edges().length() >= current_code_block_char_count:
 					_converted_text = _converted_text.trim_suffix("\n")
+					_current_paragraph -= 1
 					_converted_text += "[/code]"
 					within_tilde_block = false
 					_debug("... closing tilde block")
@@ -365,13 +399,13 @@ func _convert_markdown(source_text = "") -> String:
 						break
 					n_spaces+=1
 				var header_format: Resource = _get_header_format(n)
-				var n_digits := str(header_format.font_size).length()
 				var _start := result.get_start()
 				var opening_tags := _get_header_tags(header_format)
 				_processed_line = _processed_line.erase(_start,n+n_spaces).insert(_start,opening_tags)
 				var _end := result.get_end()
 				_processed_line = _processed_line.insert(_end-(n+n_spaces)+opening_tags.length(),_get_header_tags(header_format,true))
 				_debug("... header level %d"%n)
+				_header_anchor_paragraph[_get_header_reference(result.get_string())] = _current_paragraph
 			else:
 				break
 		
@@ -382,8 +416,8 @@ func _convert_markdown(source_text = "") -> String:
 	# end for line loop
 	# Close any remaining open list:
 	_debug("... end of text, closing all opened lists")
-	for i in range(_indent_level,-1,-1):
-		_converted_text += "[/%s]"%indent_types[i]
+	for i in range(_indent_level, -1, -1):
+		_converted_text += "[/%s]" % indent_types[i]
 	# Close any remaining open tables:
 	_debug("... end of text, closing all opened tables")
 	if _within_table:
@@ -398,16 +432,16 @@ func _convert_markdown(source_text = "") -> String:
 func _process_list_syntax(line: String, indent_spaces: Array, indent_types: Array) -> String:
 	var processed_line := ""
 	if line.length() == 0 and _indent_level >= 0:
-		for i in range(_indent_level,-1,-1):
+		for i in range(_indent_level, -1, -1):
 			_converted_text += "[/%s]" % indent_types[_indent_level]
-			_indent_level-=1
+			_indent_level -= 1
 			indent_spaces.pop_back()
 			indent_types.pop_back()
 		_converted_text += "\n"
 		_debug("... empty line, closing all list tags")
 		return ""
 	if _indent_level == -1:
-		if line.length() > 2 and line[0] in "-*+" and line[1]==" ":
+		if line.length() > 2 and line[0] in "-*+" and line[1] == " ":
 			_indent_level = 0
 			indent_spaces.append(0)
 			indent_types.append("ul")
@@ -444,9 +478,9 @@ func _process_list_syntax(line: String, indent_spaces: Array, indent_types: Arra
 					_debug("... opening list at level %d and adding element"%_indent_level)
 					break
 				else:
-					for i in range(_indent_level,-1,-1):
+					for i in range(_indent_level, -1, -1):
 						if n_s < indent_spaces[i]:
-							_converted_text += "[/%s]"%indent_types[_indent_level]
+							_converted_text += "[/%s]" % indent_types[_indent_level]
 							_indent_level -= 1
 							indent_spaces.pop_back()
 							indent_types.pop_back()
@@ -454,7 +488,7 @@ func _process_list_syntax(line: String, indent_spaces: Array, indent_types: Arra
 							break
 					_converted_text += "\n"
 					processed_line = line.substr(n_s+2)
-					_debug("...closing lists down to level %d and adding element"%_indent_level)
+					_debug("...closing lists down to level %d and adding element" % _indent_level)
 					break
 		elif _char in "123456789":
 			if line.length() > n_s+3 and line[n_s+1] == "." and line[n_s+2] == " ":
@@ -481,7 +515,7 @@ func _process_list_syntax(line: String, indent_spaces: Array, indent_types: Arra
 							break
 					_converted_text += "\n"
 					processed_line = line.substr(n_s+3)
-					_debug("...closing lists down to level %d and adding element"%_indent_level)
+					_debug("... closing lists down to level %d and adding element"%_indent_level)
 					break
 	#end for _char loop
 	if processed_line.is_empty():
@@ -597,3 +631,14 @@ func _get_header_tags(header_format: Resource, closing := false) -> String:
 		if header_format.is_underlined:
 			tags += "[u]"
 	return tags
+
+func _get_header_reference(header_string: String):
+	var anchor := "#" + header_string.lstrip("#").strip_edges().to_lower().replace(" ","-")
+	if anchor in _header_anchor_count:
+		_header_anchor_count[anchor] += 1
+		anchor += "-" + str(_header_anchor_count[anchor]-1)
+	else:
+		_header_anchor_count[anchor] = 1
+	return anchor
+
+#endregion

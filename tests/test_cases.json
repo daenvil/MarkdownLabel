@@ -105,8 +105,8 @@
 		"title": "Escaping asterisks and underscores"
 	},
 	{
-		"input": "\\\~~foo~~\n\\\~\~\~\nbar\n\~\~\\\~",
-		"output": "\~\~foo\~\~\n\~\~\~\nbar\n\~\~\~",
+		"input": "\\~~foo~~\n\\~~~\nbar\n~~\\~",
+		"output": "~~foo~~\n~~~\nbar\n~~~",
 		"title": "Escaping tildes"
 	},
 	{

@@ -46,8 +46,7 @@ My initial use case that lead me to do this was to directly include text from fi
 Simply add a MarkdownLabel to the scene and write its `markdown_text` field in Markdown format.
 
 In the RichTextLabel properties:
-- **`bbcode_enabled` property must be enabled**.
-- Do not touch the `text` property, since it's internally used by MarkdownLabel to properly format its text.
+- Do not touch neither the `bbcode_enabled` nor the `text` property, since they are internally used by MarkdownLabel to properly format its text. Both properties are hidden from the editor to prevent mistakenly editing them.
 - You can use the rest of its properties as normal.
 
 You can still use BBCode tags that don't have a Markdown equivalent, such as `[color=green]underlined text[/color]`, allowing you to have the full functionality of RichTextLabel with the simplicity and readibility of Markdown.
@@ -58,7 +57,6 @@ You can still use BBCode tags that don't have a Markdown equivalent, such as `[c
 ### Basic syntax
 
 The basic Markdown syntax works in the standard way:
-
 ```
 Markdown text ................ -> BBCode equivalent
 -------------------------------||------------------
@@ -92,7 +90,7 @@ multiline codeblock  .......... -> multiline codeblock
 
 MarkdownLabel supports headers, although RichTextLabel doesn't. By default, a line defined as a header will have its font size scaled by a pre-defined amount.
 
-To define a line as a header, begin it with any number of consecutive hash symbols (#) and follow it with the title of your header. The number of hash symbols defines the level of the header. The maximum supported level is six..
+To define a line as a header, begin it with any number of consecutive hash symbols (#) and follow it with the title of your header. The number of hash symbols defines the level of the header. The maximum supported level is six.
 
 Example:
 ```
@@ -113,19 +111,25 @@ Of course, you can also use basic formatting within the headers (e.g. `### Heade
 
 ### Links
 
-Links follow the standard Markdown syntax of `[text to display](example.com)`. Additionally, you can add tooltips to your links with `[text to display](example.com "Some tooltip")`.
+Links follow the standard Markdown syntax of `[text to display](https://example.com)`. Additionally, you can add tooltips to your links with `[text to display](https://example.com "Some tooltip")`.
 
-"Autolinks" are also supported with their standard syntax: `<example.com>`, and `<mail@example.com>` for mail autolinks.
+"Autolinks" are also supported with their standard syntax: `<https://example.com>`, and `<mail@example.com>` for mail autolinks.
 
-Keep in mind that, in Godot, **links do nothing by default**. MarkdownLabel treats them the say way (may be changed in the future). See the [RichTextLabel reference](https://docs.godotengine.org/en/stable/tutorials/ui/bbcode_in_richtextlabel.html#doc-bbcode-in-richtextlabel-handling-url-tag-clicks) for more info.
+Links created this way will be automatically handled by MarkdownLabel, implemented their expected behaviour:
+
+- Valid header anchors (such as the ones in [Contents](#contents)) will make MarkdownLabel scroll to their header's position.
+- Valid URLs and emails will be opened according to the user's settings (usually, using their default browser).
+- Links that do not match any of the above conditions will be interpreted as a URL by prefixing them with "https://". E.g. `[link](example.com)` will link to "https://example.com".
+
+This behavior can be disabled using the `automatic_links` property (enabled by default).
 
 ```
 Markdown text .............................. -> BBCode equivalent
 ---------------------------------------------||------------------
-[this is a link](example.com) .............. -> [url=example.com]this is a link[/url]
-[this is a link](example.com "Example page") -> [hint=Example url][url=example.com]this is a link[/url][/hint]
-<example.com> .............................. -> [url]example.com[/url]
-<mail@example.com> ......................... -> [url=mailto:mail@example.com]mail@example.com[/url]
+[this is a link](https://example.com) .............. -> [url=https://example.com]this is a link[/url]
+[this is a link](https://example.com "Example page") -> [hint=Example url][url=https://example.com]this is a link[/url][/hint]
+<https://example.com> .............................. -> [url]https://example.com[/url]
+<mail@example.com> ................................. -> [url=mailto:mail@example.com]mail@example.com[/url]
 ```
 
 ### Images
