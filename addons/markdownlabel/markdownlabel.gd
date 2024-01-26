@@ -2,7 +2,7 @@
 class_name MarkdownLabel
 extends RichTextLabel
 ## A control for displaying Markdown-style text.
-## 
+##
 ## A custom node that extends [RichTextLabel] to use Markdown instead of BBCode.
 ## [br][br]
 ## [b][u]Usage:[/u][/b]
@@ -13,7 +13,7 @@ extends RichTextLabel
 ## You can still use BBCode tags that don't have a Markdown equivalent, such as `[u]underlined text[/u]`, allowing you to have the full functionality of RichTextLabel with the simplicity and readibility of Markdown.
 ## [br][br]
 ## Check out the full guide in the Github repo readme file (linked below). If encountering any unreported bug or unexpected bahaviour, please ensure that your Markdown is written as clean as possible, following best practices.
-## 
+##
 ## @tutorial(Github repository): https://github.com/daenvil/MarkdownLabel
 
 const _ESCAPE_PLACEHOLDER := ";$\uFFFD:%s$;"
@@ -61,7 +61,7 @@ func _init(markdown_text: String = "") -> void:
 	self.markdown_text = markdown_text
 	if automatic_links:
 		meta_clicked.connect(_on_meta_clicked)
-	
+
 func _ready() -> void:
 	h1.connect("_updated",_update)
 	h1.connect("changed",_update)
@@ -151,7 +151,7 @@ func _convert_markdown(source_text = "") -> String:
 		return source_text
 	_converted_text = ""
 	var regex = RegEx.new()
-	
+
 	var lines = source_text.split("\n")
 	_indent_level = -1
 	var indent_spaces := []
@@ -164,7 +164,7 @@ func _convert_markdown(source_text = "") -> String:
 	_within_table = false
 	_table_row = -1
 	_line_break = true
-	
+
 	for line in lines:
 		line = line.trim_suffix("\r")
 		_debug("Parsing line: '%s'" % line)
@@ -207,9 +207,9 @@ func _convert_markdown(source_text = "") -> String:
 		if within_code_block: #ignore any formatting inside code block
 			_converted_text += _escape_bbcode(line)
 			continue
-		
+
 		var _processed_line = line
-		
+
 		# Escape characters:
 		regex.compile("\\\\"+_ESCAPEABLE_CHARACTERS_REGEX)
 		while true:
@@ -221,13 +221,13 @@ func _convert_markdown(source_text = "") -> String:
 			if not _escaped_char in _escaped_characters_map:
 				_escaped_characters_map[_escaped_char] = _escaped_characters_map.size()
 			_processed_line = _processed_line.erase(_start,2).insert(_start,_ESCAPE_PLACEHOLDER % _escaped_characters_map[_escaped_char])
-		
+
 		# Tables:
 		_processed_line = _process_table_syntax(_processed_line)
-		
+
 		# Lists:
 		_processed_line = _process_list_syntax(_processed_line,indent_spaces,indent_types)
-		
+
 		# In-line code
 		regex.compile("(`+)(.+?)\\1")
 		while true:
@@ -242,7 +242,7 @@ func _convert_markdown(source_text = "") -> String:
 				_debug("... in-line code: "+unescaped_content)
 			else:
 				break
-		
+
 		# Images
 		var img_pattern := "\\!\\[(.*?)\\]\\((.*?)\\)"
 		while true:
@@ -274,7 +274,7 @@ func _convert_markdown(source_text = "") -> String:
 					break
 			if not found_proper_match:
 				break
-		
+
 		# Links
 		var link_pattern := "\\[(.*?)\\]\\((.*?)\\)"
 		while true:
@@ -621,7 +621,11 @@ func _get_header_tags(header_format: Resource, closing := false) -> String:
 			tags += "[/b]"
 		if header_format.font_size:
 			tags += "[/font_size]"
+		if header_format.font_color:
+			tags += "[/color]"
 	else:
+		if header_format.font_color:
+			tags += "[color=#%s]" % header_format.font_color.to_html()
 		if header_format.font_size:
 			tags += "[font_size=%d]" % int(header_format.font_size * self.get_theme_font_size("normal_font_size"))
 		if header_format.is_bold:
