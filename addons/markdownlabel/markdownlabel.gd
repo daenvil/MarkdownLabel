@@ -21,11 +21,16 @@ const _ESCAPEABLE_CHARACTERS := "\\*_~`[]()\"<>#-+.!"
 const _ESCAPEABLE_CHARACTERS_REGEX := "[\\\\\\*\\_\\~`\\[\\]\\(\\)\\\"\\<\\>#\\-\\+\\.\\!]"
 
 #region Public:
+## Emitted when the node does not handle a click on a link. Can be used to execute custom functions when a link is clicked. [code]meta[/code] is the link metadata (in a regular link, it would be the URL).
+signal unhandled_link_clicked(meta: Variant)
+
 ## The text to be displayed in Markdown format.
 @export_multiline var markdown_text: String : set = _set_markdown_text
 
 ## If enabled, links will be automatically handled by this node, without needing to manually connect them. Valid header anchors will make the label scroll to that header's position. Valid URLs and e-mails will be opened according to the user's default settings.
 @export var automatic_links := true
+## If enabled, unrecognized links will be opened as HTTPS URLs (e.g. "example.com" will be opened as "https://example.com"). If disabled, unrecognized links will be left unhandled (emitting the [code]unhandled_link_clicked[/code] signal). Ignored if [code]automatic_links[/code] is disabled.
+@export var assume_https_links := true
 
 @export_group("Header formats")
 ## Formatting options for level-1 headers
@@ -81,9 +86,8 @@ func _ready() -> void:
 		#pass
 
 func _on_meta_clicked(meta: Variant) -> void:
-	if not automatic_links:
-		return
-	if typeof(meta) != TYPE_STRING:
+	if not automatic_links or typeof(meta) != TYPE_STRING:
+		unhandled_link_clicked.emit(meta)
 		return
 	if meta.begins_with("#") and meta in _header_anchor_paragraph:
 		self.scroll_to_paragraph(_header_anchor_paragraph[meta])
@@ -97,7 +101,10 @@ func _on_meta_clicked(meta: Variant) -> void:
 	if result:
 		OS.shell_open(meta)
 		return
-	OS.shell_open("https://" + meta)
+	if assume_https_links:
+		OS.shell_open("https://" + meta)
+	else:
+		unhandled_link_clicked.emit(meta)
 
 func _validate_property(property: Dictionary):
 	# Hide these properties in the editor:
