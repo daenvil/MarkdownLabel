@@ -102,10 +102,12 @@ BBCode equivalent:
 ```
 where the `27` in `[font_size=27]` comes from multiplying the set `h2.font_size` (`1.714` by default) by the current `normal_font_size` (`16` by default).
 
-You can optionally set custom sizes and formatting (bold, italics, and underline) for each header level individually. To do so:
+You can optionally set custom sizes and formatting (bold, italics, underline, and color) for each header level individually. To do so:
 
 - In the inspector, open the "Header formats" category, click on the resource associated with the desired header level, and customize the properties there.
 - In script, access those properties through the `h1`, `h2`, etc. properties. Example: `$YourMarkdownLabel.h3.is_italic = true` will set all level-3 headers within `$YourMarkdownLabel` to be displayed as italics.
+
+Note: to change a header level's font color, it's not enough with changing the ``font_color`` property: you also have to set its ``override_font_color`` property to ``true``.
 
 Of course, you can also use basic formatting within the headers (e.g. `### Header with **bold** and *italic* words`).
 

@@ -9,7 +9,9 @@ extends Resource
 @export var is_italic := false : set = _set_is_italic
 ## Whether this header level is underlined or not
 @export var is_underlined := false : set = _set_is_underlined
-## Override font color
+## When enabled, you can override the color of this header level with a custom color. If disabled, uses the same color as the rest of the text.
+@export var override_font_color: bool = false : set = _set_override_font_color
+## Custom font color to apply to this header level. Ignored if [code]override_font_color[/code] is disabled.
 @export var font_color: Color = Color.WHITE : set = _set_font_color
 
 signal _updated
@@ -19,6 +21,10 @@ func _init() -> void:
 
 func _set_font_size(new_font_size: float) -> void:
 	font_size = new_font_size
+	_updated.emit()
+
+func _set_override_font_color(enabled: bool) -> void:
+	override_font_color = enabled
 	_updated.emit()
 
 func _set_font_color(new_font_color: Color) -> void:

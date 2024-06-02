@@ -621,10 +621,10 @@ func _get_header_tags(header_format: Resource, closing := false) -> String:
 			tags += "[/b]"
 		if header_format.font_size:
 			tags += "[/font_size]"
-		if header_format.font_color:
+		if header_format.override_font_color and header_format.font_color:
 			tags += "[/color]"
 	else:
-		if header_format.font_color:
+		if header_format.override_font_color and header_format.font_color:
 			tags += "[color=#%s]" % header_format.font_color.to_html()
 		if header_format.font_size:
 			tags += "[font_size=%d]" % int(header_format.font_size * self.get_theme_font_size("normal_font_size"))

@@ -15,6 +15,8 @@ font_size = 2.285
 is_bold = false
 is_italic = false
 is_underlined = false
+override_font_color = false
+font_color = Color(1, 1, 1, 1)
 
 [sub_resource type="Resource" id="Resource_qh6ic"]
 script = ExtResource("4_tqhuu")
@@ -22,6 +24,8 @@ font_size = 1.714
 is_bold = false
 is_italic = false
 is_underlined = false
+override_font_color = false
+font_color = Color(1, 1, 1, 1)
 
 [sub_resource type="Resource" id="Resource_qx73p"]
 script = ExtResource("5_us0p7")
@@ -29,6 +33,8 @@ font_size = 1.428
 is_bold = false
 is_italic = false
 is_underlined = false
+override_font_color = false
+font_color = Color(1, 1, 1, 1)
 
 [sub_resource type="Resource" id="Resource_yx0wh"]
 script = ExtResource("6_8ublj")
@@ -36,6 +42,8 @@ font_size = 1.142
 is_bold = false
 is_italic = false
 is_underlined = false
+override_font_color = false
+font_color = Color(1, 1, 1, 1)
 
 [sub_resource type="Resource" id="Resource_1ovcl"]
 script = ExtResource("7_42de6")
@@ -43,6 +51,8 @@ font_size = 1.0
 is_bold = false
 is_italic = false
 is_underlined = false
+override_font_color = false
+font_color = Color(1, 1, 1, 1)
 
 [sub_resource type="Resource" id="Resource_fj0e0"]
 script = ExtResource("8_y8fds")
@@ -50,6 +60,8 @@ font_size = 0.857
 is_bold = false
 is_italic = false
 is_underlined = false
+override_font_color = false
+font_color = Color(1, 1, 1, 1)
 
 [node name="Example" type="Control"]
 layout_mode = 3
