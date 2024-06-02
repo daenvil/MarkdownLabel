@@ -117,13 +117,15 @@ Links follow the standard Markdown syntax of `[text to display](https://example.
 
 "Autolinks" are also supported with their standard syntax: `<https://example.com>`, and `<mail@example.com>` for mail autolinks.
 
-Links created this way will be automatically handled by MarkdownLabel, implemented their expected behaviour:
+Links created this way will be automatically handled by MarkdownLabel, implementing their expected behaviour:
 
 - Valid header anchors (such as the ones in [Contents](#contents)) will make MarkdownLabel scroll to their header's position.
 - Valid URLs and emails will be opened according to the user's settings (usually, using their default browser).
-- Links that do not match any of the above conditions will be interpreted as a URL by prefixing them with "https://". E.g. `[link](example.com)` will link to "https://example.com".
+- Links that do not match any of the above conditions will be interpreted as a URL by prefixing them with "https://". E.g. `[link](example.com)` will link to "https://example.com". This can be disabled using the ``assume_https_links`` property (enabled by default), in which case the ``unhandled_link_clicked`` signal will be emitted.
 
-This behavior can be disabled using the `automatic_links` property (enabled by default).
+This behavior can be disabled using the `automatic_links` property (enabled by default), in which case all links will be left unhandled and the ``unhandled_link_clicked`` signal will be emitted for all of them.
+
+The ``unhandled_link_clicked`` signal can be used to implement custom behavior when clicking a link. It passes the clicked link metadata (which usually would be the URL) as an argument.
 
 ```
 Markdown text .............................. -> BBCode equivalent
