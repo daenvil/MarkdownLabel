@@ -6,7 +6,7 @@ extends RichTextLabel
 ## A custom node that extends [RichTextLabel] to use Markdown instead of BBCode.
 ## [br][br]
 ## [b][u]Usage:[/u][/b]
-## Simply add a MarkdownLabel to the scene and write its [member markdown_text] field in Markdown format.
+## Simply add a MarkdownLabel to the scene and write its [member markdown_text] field in Markdown format. Alternatively, you can use the  [method display_file] method to automatically import the contents of a Markdown file.
 ## [br][br]
 ## On its [RichTextLabel] properties: [member RichTextLabel.bbcode_enabled] property must be enabled. Do not touch the [member RichTextLabel.text] property, since it's used by MarkdownLabel to properly format its text. You can use the rest of its properties as normal.
 ## [br][br]
@@ -56,7 +56,7 @@ var _header_anchor_paragraph := {}
 var _header_anchor_count := {}
 var _within_table := false
 var _table_row := -1
-var _line_break := true
+var _skip_line_break := false
 var _debug_mode := false
 #endregion
 
@@ -170,16 +170,16 @@ func _convert_markdown(source_text = "") -> String:
 	var current_code_block_char_count: int
 	_within_table = false
 	_table_row = -1
-	_line_break = true
+	_skip_line_break = false
 
 	for line in lines:
 		line = line.trim_suffix("\r")
 		_debug("Parsing line: '%s'" % line)
 		within_code_block = within_tilde_block or within_backtick_block
-		if iline > 0 and _line_break:
+		if iline > 0 and not _skip_line_break:
 			_converted_text += "\n"
 			_current_paragraph += 1
-			_line_break = true
+		_skip_line_break = false
 		iline+=1
 		if not within_tilde_block and _denotes_fenced_code_block(line,"`"):
 			if within_backtick_block:
@@ -573,7 +573,7 @@ func _process_table_syntax(line: String) -> String:
 		if _within_table:
 			_debug ("... end of table")
 			_within_table = false
-			return "\n[/table]\n"+line
+			return "[/table]\n"+line
 		else:
 			return line
 	_debug("... table row: "+line)
@@ -592,7 +592,7 @@ func _process_table_syntax(line: String) -> String:
 				is_delimiter = false
 				break
 		if is_delimiter:
-			_line_break = false
+			_skip_line_break = true
 			return ""
 	for cell in split_line:
 		processed_line += "[cell]%s[/cell]" % cell.strip_edges()
