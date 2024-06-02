@@ -15,6 +15,7 @@ A custom [Godot](https://godotengine.org/) node that extends [RichTextLabel](htt
   - [Lists](#lists)
   - [Tables](#tables)
   - [Escaping characters](#escaping-characters)
+  - [Advanced usage](#advanced-usage)
 - [Limitations](#limitations)
   - [Unsupported syntax elements](#unsupported-syntax-elements)
   - [Performance](#performance)
@@ -235,6 +236,12 @@ Keep in mind that, if you are writing text inside a script, you will have to "do
 - In-script: `\\*`, `\\\"`
 - In-editor: `\*`, `\"`
 - Result: `*`, `"`
+
+### Advanced usage
+
+MarkdownLabel can be customized to handle custom syntax if desired. There are two methods which are meant to support this use case: ``_preprocess_line()`` and ``_process_custom_syntax()``. These are called line by line and do nothing by default. ``_preprocess_line()`` is called before any syntax in the line is processed by the node, while ``_process_custom_syntax()`` is called after all syntax has been processed. These methods take a line as argument and return a processed line. This way, you can create a node that inherits from MarkdownLabel and override these methods in order to implement your custom syntax.
+
+For even more advanced customization, you can override other built-in methods, like ``_process_text_formatting_syntax()`` or ``_process_link_syntax()``. Check the source code for more information.
 
 ## Limitations
 
