@@ -194,4 +194,9 @@
 		"output": "[table=2]\n[cell][b]foo[/b][/cell][cell][i]bar[/i][/cell]\n[cell][s]baz[/s][/cell][cell][code]baz[/code][/cell]\n[/table]",
 		"title": "Table without demiliter row and with in-line formatting"
 	},
+	{
+		"input": "- [ ] foo\n  - [x] foo\n- [x] bar\n  1. baz\n  2. baz\n    - [ ] task\n    - [ ] task",
+		"output": "[ul][url={\"checked\":false,\"id\":0,\"markdownlabel-checkbox\":true}]☐[/url] foo\n[ul][url={\"checked\":true,\"id\":1,\"markdownlabel-checkbox\":true}]☑[/url] foo\n[/ul]\n[url={\"checked\":true,\"id\":2,\"markdownlabel-checkbox\":true}]☑[/url] bar\n[ol]baz\nbaz\n[ul][url={\"checked\":false,\"id\":3,\"markdownlabel-checkbox\":true}]☐[/url] task\n[url={\"checked\":false,\"id\":4,\"markdownlabel-checkbox\":true}]☐[/url] task[/ul][/ol][/ul]",
+		"title": "Task list nesting"
+	}
 ]

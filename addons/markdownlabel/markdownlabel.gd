@@ -19,10 +19,17 @@ extends RichTextLabel
 const _ESCAPE_PLACEHOLDER := ";$\uFFFD:%s$;"
 const _ESCAPEABLE_CHARACTERS := "\\*_~`[]()\"<>#-+.!"
 const _ESCAPEABLE_CHARACTERS_REGEX := "[\\\\\\*\\_\\~`\\[\\]\\(\\)\\\"\\<\\>#\\-\\+\\.\\!]"
+const _CHECKBOX_KEY := "markdownlabel-checkbox"
 
 #region Public:
 ## Emitted when the node does not handle a click on a link. Can be used to execute custom functions when a link is clicked. [code]meta[/code] is the link metadata (in a regular link, it would be the URL).
 signal unhandled_link_clicked(meta: Variant)
+## Emitted when a task list checkbox is clicked. Arguments are:
+## the id of the checkbox (used internally),
+## the line number it is on (within the original Markdown text),
+## a boolean representing whether the checkbox is now checked (true) or unchecked (false),
+## and a string containing the text after the checkbox (within the same line).
+signal task_checkbox_clicked(id: int, line: int, checked: bool, task_string: String)
 
 ## The text to be displayed in Markdown format.
 @export_multiline var markdown_text: String : set = _set_markdown_text
@@ -45,6 +52,23 @@ signal unhandled_link_clicked(meta: Variant)
 @export var h5 := H5Format.new() : set = _set_h5_format
 ## Formatting options for level-6 headers
 @export var h6 := H6Format.new() : set = _set_h6_format
+
+@export_group("Task lists")
+## Whether task list checkboxes are clickable or not.
+@export var enable_checkbox_clicks := true :
+	set(new_value):
+		enable_checkbox_clicks = new_value
+		_update()
+## String that will be displayed for unchecked task list items. Accepts BBCode and Markdown.
+@export var unchecked_item_character := "☐" :
+	set(new_value):
+		unchecked_item_character = new_value
+		_update()
+## String that will be displayed for checked task list items. Accepts BBCode and Markdown.
+@export var checked_item_character := "☑" :
+	set(new_value):
+		checked_item_character = new_value
+		_update()
 #endregion
 
 #region Private:
@@ -57,6 +81,9 @@ var _header_anchor_count := {}
 var _within_table := false
 var _table_row := -1
 var _skip_line_break := false
+var _checkbox_id: int = 0
+var _current_line: int = 0
+var _checkbox_record := {}
 var _debug_mode := false
 #endregion
 
@@ -87,7 +114,14 @@ func _ready() -> void:
 		#pass
 
 func _on_meta_clicked(meta: Variant) -> void:
-	if not automatic_links or typeof(meta) != TYPE_STRING:
+	if typeof(meta) != TYPE_STRING:
+		unhandled_link_clicked.emit(meta)
+		return
+	if meta.begins_with("{") and _CHECKBOX_KEY in meta:
+		var parsed: Dictionary = JSON.parse_string(meta)
+		if parsed[_CHECKBOX_KEY] and _checkbox_record[int(parsed.id)]:
+			_on_checkbox_clicked(int(parsed.id), parsed.checked)
+	if not automatic_links:
 		unhandled_link_clicked.emit(meta)
 		return
 	if meta.begins_with("#") and meta in _header_anchor_paragraph:
@@ -159,10 +193,10 @@ func _convert_markdown(source_text: String = "") -> String:
 		return source_text
 	_converted_text = ""
 	var lines := source_text.split("\n")
+	_current_line = 0
 	_indent_level = -1
 	var indent_spaces := []
 	var indent_types := []
-	var iline := 0
 	var within_backtick_block := false
 	var within_tilde_block := false
 	var within_code_block := false
@@ -170,16 +204,17 @@ func _convert_markdown(source_text: String = "") -> String:
 	_within_table = false
 	_table_row = -1
 	_skip_line_break = false
+	_checkbox_id = 0
 
 	for line: String in lines:
 		line = line.trim_suffix("\r")
 		_debug("Parsing line: '%s'" % line)
 		within_code_block = within_tilde_block or within_backtick_block
-		if iline > 0 and not _skip_line_break:
+		if _current_line > 0 and not _skip_line_break:
 			_converted_text += "\n"
 			_current_paragraph += 1
 		_skip_line_break = false
-		iline+=1
+		_current_line += 1
 		
 		line = _preprocess_line(line)
 		
@@ -278,7 +313,8 @@ func _process_list_syntax(line: String, indent_spaces: Array, indent_types: Arra
 			_converted_text += "[ul]"
 			processed_line = line.substr(2)
 			_debug("... opening unordered list at level 0")
-		elif line.length() > 3 and line[0] == "1" and line[1]=="." and line[2]==" ":
+			processed_line = _process_task_list_item(processed_line)
+		elif line.length() > 3 and line[0] == "1" and line[1] == "." and line[2] == " ":
 			_indent_level = 0
 			indent_spaces.append(0)
 			indent_types.append("ol")
@@ -294,18 +330,20 @@ func _process_list_syntax(line: String, indent_spaces: Array, indent_types: Arra
 			n_s += 1
 			continue
 		elif _char in "-*+":
-			if line.length() > n_s+2 and line[n_s+1] == " ":
+			if line.length() > n_s + 2 and line[n_s + 1] == " ":
 				if n_s == indent_spaces[_indent_level]:
-					processed_line = line.substr(n_s+2)
-					_debug("... adding list element at level %d"%_indent_level)
+					processed_line = line.substr(n_s + 2)
+					_debug("... adding list element at level %d" % _indent_level)
+					processed_line = _process_task_list_item(processed_line)
 					break
 				elif n_s > indent_spaces[_indent_level]:
 					_indent_level += 1
 					indent_spaces.append(n_s)
 					indent_types.append("ul")
 					_converted_text += "[ul]"
-					processed_line = line.substr(n_s+2)
-					_debug("... opening list at level %d and adding element"%_indent_level)
+					processed_line = line.substr(n_s + 2)
+					_debug("... opening list at level %d and adding element" % _indent_level)
+					processed_line = _process_task_list_item(processed_line)
 					break
 				else:
 					for i in range(_indent_level, -1, -1):
@@ -317,40 +355,41 @@ func _process_list_syntax(line: String, indent_spaces: Array, indent_types: Arra
 						else:
 							break
 					_converted_text += "\n"
-					processed_line = line.substr(n_s+2)
+					processed_line = line.substr(n_s + 2)
 					_debug("...closing lists down to level %d and adding element" % _indent_level)
+					processed_line = _process_task_list_item(processed_line)
 					break
 		elif _char in "123456789":
-			if line.length() > n_s+3 and line[n_s+1] == "." and line[n_s+2] == " ":
+			if line.length() > n_s + 3 and line[n_s + 1] == "." and line[n_s + 2] == " ":
 				if n_s == indent_spaces[_indent_level]:
-					processed_line = line.substr(n_s+3)
-					_debug("... adding list element at level %d"%_indent_level)
+					processed_line = line.substr(n_s + 3)
+					_debug("... adding list element at level %d" % _indent_level)
 					break
 				elif n_s > indent_spaces[_indent_level]:
 					_indent_level += 1
 					indent_spaces.append(n_s)
 					indent_types.append("ol")
 					_converted_text += "[ol]"
-					processed_line = line.substr(n_s+3)
-					_debug("... opening list at level %d and adding element"%_indent_level)
+					processed_line = line.substr(n_s + 3)
+					_debug("... opening list at level %d and adding element" % _indent_level)
 					break
 				else:
-					for i in range(_indent_level,-1,-1):
+					for i in range(_indent_level, -1, -1):
 						if n_s < indent_spaces[i]:
-							_converted_text += "[/%s]"%indent_types[_indent_level]
+							_converted_text += "[/%s]" % indent_types[_indent_level]
 							_indent_level -= 1
 							indent_spaces.pop_back()
 							indent_types.pop_back()
 						else:
 							break
 					_converted_text += "\n"
-					processed_line = line.substr(n_s+3)
-					_debug("... closing lists down to level %d and adding element"%_indent_level)
+					processed_line = line.substr(n_s + 3)
+					_debug("... closing lists down to level %d and adding element" % _indent_level)
 					break
 	#end for _char loop
 	if processed_line.is_empty():
-		for i in range(_indent_level,-1,-1):
-			_converted_text += "[/%s]"%indent_types[i]
+		for i in range(_indent_level, -1, -1):
+			_converted_text += "[/%s]" % indent_types[i]
 			_indent_level -= 1
 			indent_spaces.pop_back()
 			indent_types.pop_back()
@@ -358,6 +397,31 @@ func _process_list_syntax(line: String, indent_spaces: Array, indent_types: Arra
 		processed_line = line
 		_debug("... regular line, closing all opened lists")
 	return processed_line
+
+func _process_task_list_item(item: String) -> String:
+	if item.length() <= 2 or item[0] != "[" or item[2] != "]" or not item[1] in " x":
+		return item
+	var processed_item := item.erase(0, 3)
+	var checkbox: String
+	var meta := {
+		_CHECKBOX_KEY: true,
+		"id": _checkbox_id
+	}
+	_checkbox_record[_checkbox_id] = _current_line - 1 # _current_line is actually the next line here
+	_checkbox_id += 1
+	if item[1] == " ":
+		checkbox = unchecked_item_character
+		meta.checked = false
+		_debug("... item is an unchecked task item")
+	elif item[1] == "x":
+		checkbox = checked_item_character
+		meta.checked = true
+		_debug("... item is a checked task item")
+	if enable_checkbox_clicks:
+		processed_item = processed_item.insert(0, "[url=%s]%s[/url]" % [JSON.stringify(meta), checkbox])
+	else:
+		processed_item = processed_item.insert(0, checkbox)
+	return processed_item
 
 func _process_inline_code_syntax(line: String) -> String:
 	var regex := RegEx.create_from_string("(`+)(.+?)\\1")
@@ -686,4 +750,16 @@ func _get_header_reference(header_string: String) -> String:
 		_header_anchor_count[anchor] = 1
 	return anchor
 
+func _on_checkbox_clicked(id: int, was_checked: bool) -> void:
+	var iline: int = _checkbox_record[id]
+	var lines := markdown_text.split("\n")
+	var old_string := "[x]" if was_checked else "[ ]"
+	var new_string := "[ ]" if was_checked else "[x]"
+	var i := lines[iline].find(old_string)
+	if i == -1:
+		push_error("Couldn't find the clicked task list checkbox (id=%d, line=%d)" % [id, iline]) # Shouldn't happen. Please report the bug if it happens.
+		return
+	lines[iline] = lines[iline].erase(i, old_string.length()).insert(i, new_string)
+	markdown_text = "\n".join(lines)
+	task_checkbox_clicked.emit(id, iline, !was_checked, lines[iline].substr(i + 3))
 #endregion

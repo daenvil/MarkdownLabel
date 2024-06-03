@@ -13,6 +13,7 @@ A custom [Godot](https://godotengine.org/) node that extends [RichTextLabel](htt
   - [Links](#links)
   - [Images](#images)
   - [Lists](#lists)
+    - [Task list items (checkboxes)](#task-list-items)
   - [Tables](#tables)
   - [Escaping characters](#escaping-characters)
   - [Advanced usage](#advanced-usage)
@@ -182,6 +183,29 @@ Third element. The number at the beginning doesn't need to match the actual orde
 [ol]This is a nested list inside another nested list.[/ol]
 [/ul][/ol]
 ```
+
+#### Task list items
+
+A task list item is an unordered list item which begins with ``[ ]`` or ``[x]``. These characters are, by default, replaced with a checkbox icon when converting the text (☐ and ☑, respectively). These checkbox characters depend on the used font and may not display properly, so they can be customized using the ``unchecked_item_character`` and ``checked_item_character`` properties, where you can even insert an image using BBCode or Markdown syntax.
+
+When clicking on a checkbox, it automatically checks/unchecks itself and emits the ``task_checkbox_clicked`` signal. This behavior can be disabled with the ``enable_checkbox_clicks`` property.
+
+The arguments of the ``task_checkbox_clicked`` signal are:
+
+- The id of the checkbox (used internally)
+- The line number it is on (within the original Markdown text)
+- A boolean representing whether the checkbox is now checked (true) or unchecked (false)
+- A string containing the text after the checkbox (within the same line).
+
+Example (run the ``example.tscn`` scene to test it):
+
+- [ ] This is an unchecked item
+  - [x] This is a nested task
+- [x] This is a checked item
+  1. This is a nested regular list
+  2. Here goes another nested task list:
+    - [ ] Task 1
+    - [ ] Task 2
 
 ### Tables
 
