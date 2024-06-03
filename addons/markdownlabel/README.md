@@ -186,7 +186,7 @@ Third element. The number at the beginning doesn't need to match the actual orde
 
 #### Task list items
 
-A task list item is an unordered list item which begins with ``[ ]`` or ``[x]``. These characters are, by default, replaced with a checkbox icon when converting the text (☐ and ☑, respectively). These checkbox characters depend on the used font and may not display properly, so they can be customized using the ``unchecked_item_character`` and ``checked_item_character`` properties, where you can even insert an image using BBCode or Markdown syntax.
+A task list item is an unordered list item which begins with ``[ ]`` or ``[x]`` followed by a space. These characters are, by default, replaced with a checkbox icon when converting the text (☐ and ☑, respectively). These checkbox characters depend on the used font and may not display properly, so they can be customized using the ``unchecked_item_character`` and ``checked_item_character`` properties, where you can even insert an image using BBCode or Markdown syntax.
 
 When clicking on a checkbox, it automatically checks/unchecks itself and emits the ``task_checkbox_clicked`` signal. This behavior can be disabled with the ``enable_checkbox_clicks`` property.
 

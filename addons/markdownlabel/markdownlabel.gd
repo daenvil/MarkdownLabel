@@ -399,7 +399,7 @@ func _process_list_syntax(line: String, indent_spaces: Array, indent_types: Arra
 	return processed_line
 
 func _process_task_list_item(item: String) -> String:
-	if item.length() <= 2 or item[0] != "[" or item[2] != "]" or not item[1] in " x":
+	if item.length() <= 3 or item[0] != "[" or item[2] != "]" or item[3] != " " or not item[1] in " x":
 		return item
 	var processed_item := item.erase(0, 3)
 	var checkbox: String
@@ -761,5 +761,5 @@ func _on_checkbox_clicked(id: int, was_checked: bool) -> void:
 		return
 	lines[iline] = lines[iline].erase(i, old_string.length()).insert(i, new_string)
 	markdown_text = "\n".join(lines)
-	task_checkbox_clicked.emit(id, iline, !was_checked, lines[iline].substr(i + 3))
+	task_checkbox_clicked.emit(id, iline, !was_checked, lines[iline].substr(i + 4))
 #endregion
