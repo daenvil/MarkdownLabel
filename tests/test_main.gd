@@ -22,20 +22,25 @@ func main() -> void:
 	# Perform tests:
 	var failed_tests := []
 	var case_count := 0
-	for case in test_cases:
+	for case: Dictionary in test_cases:
 		if not specific_cases.is_empty() and not case.title in specific_cases:
 			continue
 		case_count += 1
-		var result = md_label._convert_markdown(case.input)
-		var success = result == case.output
+		var result := md_label._convert_markdown(case.input)
+		var success: bool = result == case.output
 		if not success:
-			failed_tests.append({"title":case.title,"input":case.input,"output":case.output,"result":result})
+			failed_tests.append({
+				"title": case.title,
+				"input": case.input,
+				"output": case.output,
+				"result": result
+			})
 	
 	# Display test results:
 	if failed_tests.size() > 0:
-		print_rich("[color=#ff6666]Tests: %d errors:[/color]"%failed_tests.size())
-		for case in failed_tests:
-			print_rich("[color=#ff6666]- %s[/color]"%case["title"])
+		print_rich("[color=#ff6666]Tests: %d errors:[/color]" % failed_tests.size())
+		for case: Dictionary in failed_tests:
+			print_rich("[color=#ff6666]- %s[/color]" % case.title)
 			print_rich("[color=#ff6666]  - Input:[/color]")
 			print(case["input"])
 			print_rich("[color=#ff6666]  - Expected result:[/color]")
@@ -46,7 +51,7 @@ func main() -> void:
 		if specific_cases.is_empty():
 			print_rich("[color=#66ff66]All tests: OK[/color]")
 		elif case_count>0:
-			print_rich("[color=#66ff66]Specific tests: OK (%d/%d tests)[/color]" % [case_count,specific_cases.size()])
+			print_rich("[color=#66ff66]Specific tests: OK (%d/%d tests)[/color]" % [case_count, specific_cases.size()])
 	if case_count < specific_cases.size():
 		print_rich("[color=#ff6666]WARNING: not all specific cases were found.[/color]")
 	md_label.queue_free()

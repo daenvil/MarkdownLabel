@@ -13,8 +13,10 @@ A custom [Godot](https://godotengine.org/) node that extends [RichTextLabel](htt
   - [Links](#links)
   - [Images](#images)
   - [Lists](#lists)
+    - [Task list items (checkboxes)](#task-list-items)
   - [Tables](#tables)
   - [Escaping characters](#escaping-characters)
+  - [Advanced usage](#advanced-usage)
 - [Limitations](#limitations)
   - [Unsupported syntax elements](#unsupported-syntax-elements)
   - [Performance](#performance)
@@ -43,7 +45,7 @@ My initial use case that lead me to do this was to directly include text from fi
 
 ## Usage
 
-Simply add a MarkdownLabel to the scene and write its `markdown_text` field in Markdown format.
+Simply add a MarkdownLabel to the scene and write its `markdown_text` field in Markdown format. Alternatively, you can use the ``display_file`` method to automatically import the contents of a Markdown file.
 
 In the RichTextLabel properties:
 - Do not touch neither the `bbcode_enabled` nor the `text` property, since they are internally used by MarkdownLabel to properly format its text. Both properties are hidden from the editor to prevent mistakenly editing them.
@@ -182,6 +184,29 @@ Third element. The number at the beginning doesn't need to match the actual orde
 [/ul][/ol]
 ```
 
+#### Task list items
+
+A task list item is an unordered list item which begins with ``[ ]`` or ``[x]`` followed by a space. These characters are, by default, replaced with a checkbox icon when converting the text (☐ and ☑, respectively). These checkbox characters depend on the used font and may not display properly, so they can be customized using the ``unchecked_item_character`` and ``checked_item_character`` properties, where you can even insert an image using BBCode or Markdown syntax.
+
+When clicking on a checkbox, it automatically checks/unchecks itself and emits the ``task_checkbox_clicked`` signal. This behavior can be disabled with the ``enable_checkbox_clicks`` property.
+
+The arguments of the ``task_checkbox_clicked`` signal are:
+
+- The id of the checkbox (used internally)
+- The line number it is on (within the original Markdown text)
+- A boolean representing whether the checkbox is now checked (true) or unchecked (false)
+- A string containing the text after the checkbox (within the same line).
+
+Example (run the ``example.tscn`` scene to test it):
+
+- [ ] This is an unchecked item
+  - [x] This is a nested task
+- [x] This is a checked item
+  1. This is a nested regular list
+  2. Here goes another nested task list:
+    - [ ] Task 1
+    - [ ] Task 2
+
 ### Tables
 
 Tables are constructed by separating columns with pipes (`|`).
@@ -235,6 +260,12 @@ Keep in mind that, if you are writing text inside a script, you will have to "do
 - In-script: `\\*`, `\\\"`
 - In-editor: `\*`, `\"`
 - Result: `*`, `"`
+
+### Advanced usage
+
+MarkdownLabel can be customized to handle custom syntax if desired. There are two methods which are meant to support this use case: ``_preprocess_line()`` and ``_process_custom_syntax()``. These are called line by line and do nothing by default. ``_preprocess_line()`` is called before any syntax in the line is processed by the node, while ``_process_custom_syntax()`` is called after all syntax has been processed. These methods take a line as argument and return a processed line. This way, you can create a node that inherits from MarkdownLabel and override these methods in order to implement your custom syntax.
+
+For even more advanced customization, you can override other built-in methods, like ``_process_text_formatting_syntax()`` or ``_process_link_syntax()``. Check the source code for more information.
 
 ## Limitations
 
