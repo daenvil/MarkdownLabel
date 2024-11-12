@@ -1,3 +1,4 @@
+@tool
 class_name H5Format
 extends Resource
 
@@ -14,31 +15,29 @@ extends Resource
 ## Custom font color to apply to this header level. Ignored if [code]override_font_color[/code] is disabled.
 @export var font_color: Color = Color.WHITE : set = _set_font_color
 
-signal _updated
-
 func _init() -> void:
 	resource_local_to_scene = true
 
 func _set_font_size(new_font_size: float) -> void:
 	font_size = new_font_size
-	_updated.emit()
+	emit_changed()
 
 func _set_override_font_color(enabled: bool) -> void:
 	override_font_color = enabled
-	_updated.emit()
+	emit_changed()
 
 func _set_font_color(new_font_color: Color) -> void:
 	font_color = new_font_color
-	_updated.emit()
+	emit_changed()
 
 func _set_is_bold(new_is_bold: bool) -> void:
 	is_bold = new_is_bold
-	_updated.emit()
+	emit_changed()
 
 func _set_is_italic(new_is_italic: bool) -> void:
 	is_italic = new_is_italic
-	_updated.emit()
+	emit_changed()
 
 func _set_is_underlined(new_is_underlined: bool) -> void:
 	is_underlined = new_is_underlined
-	_updated.emit()
+	emit_changed()
