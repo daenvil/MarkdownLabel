@@ -6,6 +6,7 @@
 export.cfg
 export_presets.cfg
 *.import
+!addons/markdownlabel/icon.svg.import
 project.godot
 
 # Imported translations (automatically generated from CSV files)
