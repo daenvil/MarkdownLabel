@@ -2,6 +2,8 @@
 
 A custom [Godot](https://godotengine.org/) node that extends [RichTextLabel](https://docs.godotengine.org/en/stable/classes/class_richtextlabel.html) to use Markdown instead of BBCode.
 
+Compatible with **Godot 4.2+**. Contains uid files for Godot 4.4+.
+
 ### Contents
 
 - [Disclaimer](#disclaimer)
@@ -24,7 +26,7 @@ A custom [Godot](https://godotengine.org/) node that extends [RichTextLabel](htt
 
 ## Disclaimer
 
-**This is a work in progress**. I created this for my own use and figured out someone else might as well have some use for it. Obviously using BBCode will be better performance-wise since it's natively integrated in Godot. But using Markdown is much easier to write and read, so it can save development time in many cases.
+I created this for my own use and figured out someone else might as well have some use for it. Obviously using BBCode will be better performance-wise since it's natively integrated in Godot. But using Markdown is much easier to write and read, so it can save development time in many cases.
 
 I coded this quickly and without previous knowledge of how to parse Markdown properly, so there might be some inefficiencies and bugs. Please report any unexpected behavior.
 
@@ -38,10 +40,19 @@ My initial use case that lead me to do this was to directly include text from fi
 
 ## Installation
 
-1. Download the `addons` folder of this repository.
-2. Place it in your project's root folder.
-3. Go to `Project > Project Settings... > Plugins` and enable the MarkdownLabel plugin.
-4. Reload the project.
+**From Github:**
+
+1. Download the `addons` folder of this repository
+2. Place it in your project's root folder (merge it if you already have an 'addons' folder)
+3. Go to `Project > Project Settings... > Plugins` and enable the MarkdownLabel plugin
+
+**From Godot:**
+
+1. Go to the AssetLib tab and search for MarkdownLabel
+2. Click "Download" and then "Install"
+3. Go to `Project > Project Settings... > Plugins` and enable the MarkdownLabel plugin
+
+You might need to reload the project.
 
 ## Usage
 
