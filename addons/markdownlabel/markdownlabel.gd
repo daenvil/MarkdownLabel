@@ -140,6 +140,10 @@ func _validate_property(property: Dictionary) -> void:
 	if property.name in ["bbcode_enabled", "text"]:
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED:
+		_update()
+
 #endregion
 
 #region Public methods:
@@ -150,7 +154,7 @@ func display_file(file_path: String) -> void:
 
 #region Private methods:
 func _update() -> void:
-	text = _convert_markdown(markdown_text)
+	text = _convert_markdown( TranslationServer.translate(markdown_text) )
 	queue_redraw()
 
 func _set_markdown_text(new_text: String) -> void:
