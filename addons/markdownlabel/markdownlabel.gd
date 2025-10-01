@@ -154,7 +154,7 @@ func display_file(file_path: String) -> void:
 
 #region Private methods:
 func _update() -> void:
-	text = _convert_markdown( TranslationServer.translate(markdown_text) if can_auto_translate() else markdown_text)
+	text = _convert_markdown( TranslationServer.translate(markdown_text) as StringName if can_auto_translate() else markdown_text)
 	queue_redraw()
 
 func _set_markdown_text(new_text: String) -> void:
