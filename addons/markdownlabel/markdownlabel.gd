@@ -144,6 +144,20 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED:
 		_update()
 
+func _set(property: StringName, value: Variant) -> bool:
+	if property == "text":
+		markdown_text = value
+		return true
+	if property == "markdown_text":
+		text = value
+		return true
+	return false
+
+func _get(property: StringName) -> Variant:
+	if property == "text":
+		return markdown_text
+	return null
+
 #endregion
 
 #region Public methods:
@@ -154,7 +168,8 @@ func display_file(file_path: String) -> void:
 
 #region Private methods:
 func _update() -> void:
-	text = _convert_markdown( TranslationServer.translate(markdown_text) as StringName if can_auto_translate() else markdown_text)
+	super.clear()
+	super.parse_bbcode(_convert_markdown( TranslationServer.translate(markdown_text) as StringName if can_auto_translate() else markdown_text))
 	queue_redraw()
 
 func _set_markdown_text(new_text: String) -> void:
