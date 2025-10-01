@@ -31,8 +31,10 @@ signal unhandled_link_clicked(meta: Variant)
 ## and a string containing the text after the checkbox (within the same line).
 signal task_checkbox_clicked(id: int, line: int, checked: bool, task_string: String)
 
-## The text to be displayed in Markdown format.
-@export_multiline var markdown_text: String : set = _set_markdown_text
+## Deprecated: Use [text] instead.
+var markdown_text: String :
+	set = _set_text,
+	get = _get_markdown_tex
 
 ## If enabled, links will be automatically handled by this node, without needing to manually connect them. Valid header anchors will make the label scroll to that header's position. Valid URLs and e-mails will be opened according to the user's default settings.
 @export var automatic_links := true
@@ -72,6 +74,7 @@ signal task_checkbox_clicked(id: int, line: int, checked: bool, task_string: Str
 #endregion
 
 #region Private:
+var _original_text: String = "": set = _set_original_text
 var _converted_text: String
 var _indent_level: int
 var _escaped_characters_map := {}
@@ -137,7 +140,7 @@ func _on_meta_clicked(meta: Variant) -> void:
 
 func _validate_property(property: Dictionary) -> void:
 	# Hide these properties in the editor:
-	if property.name in ["bbcode_enabled", "text"]:
+	if property.name  == "bbcode_enabled":
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
 func _notification(what: int) -> void:
@@ -146,13 +149,13 @@ func _notification(what: int) -> void:
 
 func _set(property: StringName, value: Variant) -> bool:
 	if property == "text":
-		markdown_text = value
+		_set_text(value)
 		return true
 	return false
 
 func _get(property: StringName) -> Variant:
 	if property == "text":
-		return markdown_text
+		return _original_text
 	return null
 
 #endregion
@@ -160,18 +163,26 @@ func _get(property: StringName) -> Variant:
 #region Public methods:
 ## Reads the specified file and displays it as markdown.
 func display_file(file_path: String) -> void:
-	markdown_text = FileAccess.get_file_as_string(file_path)
+	_original_text = FileAccess.get_file_as_string(file_path)
 #endregion
 
 #region Private methods:
+func _set_text(new_text: String) -> void:
+	_original_text = new_text
+	_update()
+
+func _set_original_text(new_text: String) -> void:
+	_original_text = new_text
+	_update()
+
+# This just makes sure scripts that use the deprecated [markdown_text] variable won't break.
+func _get_markdown_text() -> String:
+	return text
+
 func _update() -> void:
 	super.clear()
-	super.parse_bbcode(_convert_markdown( TranslationServer.translate(markdown_text) as StringName if can_auto_translate() else markdown_text))
+	super.parse_bbcode(_convert_markdown( TranslationServer.translate(_original_text) as StringName if can_auto_translate() else _original_text))
 	queue_redraw()
-
-func _set_markdown_text(new_text: String) -> void:
-	markdown_text = new_text
-	_update()
 
 func _set_h1_format(new_format: H1Format) -> void:
 	h1 = new_format
@@ -762,7 +773,7 @@ func _get_header_reference(header_string: String) -> String:
 
 func _on_checkbox_clicked(id: int, was_checked: bool) -> void:
 	var iline: int = _checkbox_record[id]
-	var lines := markdown_text.split("\n")
+	var lines := _original_text.split("\n")
 	var old_string := "[x]" if was_checked else "[ ]"
 	var new_string := "[ ]" if was_checked else "[x]"
 	var i := lines[iline].find(old_string)
@@ -770,6 +781,6 @@ func _on_checkbox_clicked(id: int, was_checked: bool) -> void:
 		push_error("Couldn't find the clicked task list checkbox (id=%d, line=%d)" % [id, iline]) # Shouldn't happen. Please report the bug if it happens.
 		return
 	lines[iline] = lines[iline].erase(i, old_string.length()).insert(i, new_string)
-	markdown_text = "\n".join(lines)
+	_set("text", "\n".join(lines)) #calling [text] directly from this class does not use [_set()].
 	task_checkbox_clicked.emit(id, iline, !was_checked, lines[iline].substr(i + 4))
 #endregion
