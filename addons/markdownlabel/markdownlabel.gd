@@ -34,7 +34,7 @@ signal task_checkbox_clicked(id: int, line: int, checked: bool, task_string: Str
 ## Deprecated: Use [text] instead.
 var markdown_text: String :
 	set = _set_text,
-	get = _get_markdown_tex
+	get = _get_markdown_text
 
 ## If enabled, links will be automatically handled by this node, without needing to manually connect them. Valid header anchors will make the label scroll to that header's position. Valid URLs and e-mails will be opened according to the user's default settings.
 @export var automatic_links := true
