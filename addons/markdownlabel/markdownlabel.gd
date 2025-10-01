@@ -148,9 +148,6 @@ func _set(property: StringName, value: Variant) -> bool:
 	if property == "text":
 		markdown_text = value
 		return true
-	if property == "markdown_text":
-		text = value
-		return true
 	return false
 
 func _get(property: StringName) -> Variant:
