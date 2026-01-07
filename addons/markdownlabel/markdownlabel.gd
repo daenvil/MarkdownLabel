@@ -143,10 +143,6 @@ func _validate_property(property: Dictionary) -> void:
 	if property.name  == "bbcode_enabled":
 		property.usage = PROPERTY_USAGE_NO_EDITOR
 
-func _notification(what: int) -> void:
-	if what == NOTIFICATION_TRANSLATION_CHANGED:
-		_update()
-
 func _set(property: StringName, value: Variant) -> bool:
 	if property == "text":
 		_set_text(value)
@@ -181,7 +177,7 @@ func _get_markdown_text() -> String:
 
 func _update() -> void:
 	super.clear()
-	super.parse_bbcode(_convert_markdown( TranslationServer.translate(_original_text) as StringName if can_auto_translate() else _original_text))
+	super.parse_bbcode(_convert_markdown(_original_text))
 	queue_redraw()
 
 func _set_h1_format(new_format: H1Format) -> void:
