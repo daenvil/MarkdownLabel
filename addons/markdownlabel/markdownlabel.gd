@@ -32,9 +32,7 @@ signal unhandled_link_clicked(meta: Variant)
 signal task_checkbox_clicked(id: int, line: int, checked: bool, task_string: String)
 
 ## Deprecated: Use [text] instead.
-var markdown_text: String :
-	set = _set_text,
-	get = _get_markdown_text
+var markdown_text: String : set = _set_markdown_text
 
 ## If enabled, links will be automatically handled by this node, without needing to manually connect them. Valid header anchors will make the label scroll to that header's position. Valid URLs and e-mails will be opened according to the user's default settings.
 @export var automatic_links := true
@@ -74,7 +72,6 @@ var markdown_text: String :
 #endregion
 
 #region Private:
-var _original_text: String = "": set = _set_original_text
 var _converted_text: String
 var _indent_level: int
 var _escaped_characters_map := {}
@@ -151,7 +148,7 @@ func _set(property: StringName, value: Variant) -> bool:
 
 func _get(property: StringName) -> Variant:
 	if property == "text":
-		return _original_text
+		return markdown_text
 	return null
 
 #endregion
@@ -159,25 +156,21 @@ func _get(property: StringName) -> Variant:
 #region Public methods:
 ## Reads the specified file and displays it as markdown.
 func display_file(file_path: String) -> void:
-	_original_text = FileAccess.get_file_as_string(file_path)
+	markdown_text = FileAccess.get_file_as_string(file_path)
 #endregion
 
 #region Private methods:
 func _set_text(new_text: String) -> void:
-	_original_text = new_text
+	markdown_text = new_text
 	_update()
 
-func _set_original_text(new_text: String) -> void:
-	_original_text = new_text
+func _set_markdown_text(new_text: String) -> void:
+	markdown_text = new_text
 	_update()
-
-# This just makes sure scripts that use the deprecated [markdown_text] variable won't break.
-func _get_markdown_text() -> String:
-	return text
 
 func _update() -> void:
 	super.clear()
-	super.parse_bbcode(_convert_markdown(_original_text))
+	super.parse_bbcode(_convert_markdown(markdown_text))
 	queue_redraw()
 
 func _set_h1_format(new_format: H1Format) -> void:
@@ -769,7 +762,7 @@ func _get_header_reference(header_string: String) -> String:
 
 func _on_checkbox_clicked(id: int, was_checked: bool) -> void:
 	var iline: int = _checkbox_record[id]
-	var lines := _original_text.split("\n")
+	var lines := markdown_text.split("\n")
 	var old_string := "[x]" if was_checked else "[ ]"
 	var new_string := "[ ]" if was_checked else "[x]"
 	var i := lines[iline].find(old_string)
