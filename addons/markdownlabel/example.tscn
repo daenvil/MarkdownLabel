@@ -78,9 +78,9 @@ grow_vertical = 2
 unique_name_in_owner = true
 layout_mode = 2
 bbcode_enabled = true
-text = "This is a **test** of a simple [color=green]*MarkdownLabel*[/color] [u]set in the editor[/u]. Below is a MarkdownLabel displaying a text read from a file."
 fit_content = true
 script = ExtResource("2_opcio")
+markdown_text = "This is a **test** of a simple [color=green]*MarkdownLabel*[/color] [u]set in the editor[/u]. Below is a MarkdownLabel displaying a text read from a file."
 h1 = SubResource("Resource_s4fot")
 h2 = SubResource("Resource_qroun")
 h3 = SubResource("Resource_dgj8w")

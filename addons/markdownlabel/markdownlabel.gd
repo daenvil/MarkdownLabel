@@ -22,7 +22,7 @@ const _ESCAPEABLE_CHARACTERS_REGEX := "[\\\\\\*\\_\\~`\\[\\]\\(\\)\\\"\\<\\>#\\-
 const _CHECKBOX_KEY := "markdownlabel-checkbox"
 
 #region Public:
-## Emitted when the node does not handle a click on a link. Can be used to execute custom functions when a link is clicked. [code]meta[/code] is the link metadata (in a regular link, it would be the URL).
+## Emitted when the node does not handle a click on a link. Can be used to execute custom functions when a link is clicked. [param meta] is the link metadata (in a regular link, it would be the URL).
 signal unhandled_link_clicked(meta: Variant)
 ## Emitted when a task list checkbox is clicked. Arguments are:
 ## the id of the checkbox (used internally),
@@ -31,12 +31,13 @@ signal unhandled_link_clicked(meta: Variant)
 ## and a string containing the text after the checkbox (within the same line).
 signal task_checkbox_clicked(id: int, line: int, checked: bool, task_string: String)
 
-## Deprecated: Use [text] instead.
-var markdown_text: String : set = _set_markdown_text
+## The text to be displayed in Markdown format.[br][br]
+## [i]Note: the [member RichTextLabel.text] property is overridden so modifying it through code has the same effect as modifying [member markdown_text].[/i]
+@export_multiline var markdown_text: String : set = _set_markdown_text
 
 ## If enabled, links will be automatically handled by this node, without needing to manually connect them. Valid header anchors will make the label scroll to that header's position. Valid URLs and e-mails will be opened according to the user's default settings.
 @export var automatic_links := true
-## If enabled, unrecognized links will be opened as HTTPS URLs (e.g. "example.com" will be opened as "https://example.com"). If disabled, unrecognized links will be left unhandled (emitting the [code]unhandled_link_clicked[/code] signal). Ignored if [code]automatic_links[/code] is disabled.
+## If enabled, unrecognized links will be opened as HTTPS URLs (e.g. "example.com" will be opened as "https://example.com"). If disabled, unrecognized links will be left unhandled (emitting the [signal unhandled_link_clicked] signal). Ignored if [member automatic_links] is disabled.
 @export var assume_https_links := true
 
 @export_group("Header formats")
@@ -136,9 +137,10 @@ func _on_meta_clicked(meta: Variant) -> void:
 		unhandled_link_clicked.emit(meta)
 
 func _validate_property(property: Dictionary) -> void:
-	# Hide these properties in the editor:
-	if property.name  == "bbcode_enabled":
+	if property.name == "bbcode_enabled":
 		property.usage = PROPERTY_USAGE_NO_EDITOR
+	elif property.name == "text":
+		property.usage = PROPERTY_USAGE_NONE # Don't store in scene file (markdown_text is already stored) nor show in editor
 
 func _set(property: StringName, value: Variant) -> bool:
 	if property == "text":
