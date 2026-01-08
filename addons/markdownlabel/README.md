@@ -56,10 +56,11 @@ You might need to reload the project.
 
 ## Usage
 
-Simply add a MarkdownLabel to the scene and write its `markdown_text` field in Markdown format. Alternatively, you can use the ``display_file`` method to automatically import the contents of a Markdown file.
+Simply add a MarkdownLabel to the scene and write its `markdown_text` field in Markdown format. Alternatively, you can use the `display_file` method to automatically import the contents of a Markdown file.
 
 In the RichTextLabel properties:
-- Do not touch neither the `bbcode_enabled` nor the `text` property, since they are internally used by MarkdownLabel to properly format its text. Both properties are hidden from the editor to prevent mistakenly editing them.
+- Do not touch the `bbcode_enabled` property, since it's automatically set to `true` by MarkdownLabel to properly format its text. It's hidden from the editor to prevent misusage.
+- Editing the `text` property has the same effect as editing `markdown_text`. It's hidden from the editor to prevent misusage.
 - You can use the rest of its properties as normal.
 
 You can still use BBCode tags that don't have a Markdown equivalent, such as `[color=green]underlined text[/color]`, allowing you to have the full functionality of RichTextLabel with the simplicity and readibility of Markdown.
