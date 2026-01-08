@@ -18,7 +18,7 @@ Compatible with **Godot 4.2+**. Contains uid files for Godot 4.4+.
     - [Task list items (checkboxes)](#task-list-items)
   - [Tables](#tables)
   - [Escaping characters](#escaping-characters)
-  - [Translations](#translations)
+  - [Internationalization](#internationalization)
   - [Advanced usage](#advanced-usage)
 - [Limitations](#limitations)
   - [Unsupported syntax elements](#unsupported-syntax-elements)
@@ -65,6 +65,8 @@ In the RichTextLabel properties:
 - You can use the rest of its properties as normal.
 
 You can still use BBCode tags that don't have a Markdown equivalent, such as `[color=green]underlined text[/color]`, allowing you to have the full functionality of RichTextLabel with the simplicity and readibility of Markdown.
+
+You can access the in-editor documentation in Godot by going to "Help" > "Search Help" and search for MarkdownLabel.
 
 ![An example of the node being used to display this Markdown file](addons/markdownlabel/assets/screenshot.png "An example of the node being used to display this Markdown file")
 *An example of the node being used to display this Markdown file.*
@@ -279,6 +281,12 @@ Keep in mind that, if you are writing text inside a script, you will have to "do
 By default, if ``markdown_text`` is set to a translation key, the label will automatically show the corresponding localized text. This is the same behavior as in other control nodes such as ``Label`` and ``RichTextLabel``. This can be disabled by modifying the node's [``auto_translate_mode``](https://docs.godotengine.org/en/stable/classes/class_node.html#class-node-property-auto-translate-mode) property. Read [the official docs on game internationalization](https://docs.godotengine.org/en/stable/tutorials/i18n/internationalizing_games.html) for more information.
 
 ### Advanced usage
+
+#### Front-matter
+
+By default, the ``display_file()`` method separates YAML/TOML front-matter (if present) and actual Markdown content, only displaying the Markdown content. The front-matter is stored internally as a string and can be retrieved using the ``get_frontmatter()`` method afterwards.
+
+#### Custom syntax
 
 MarkdownLabel can be customized to handle custom syntax if desired. There are two methods which are meant to support this use case: ``_preprocess_line()`` and ``_process_custom_syntax()``. These are called line by line and do nothing by default. ``_preprocess_line()`` is called before any syntax in the line is processed by the node, while ``_process_custom_syntax()`` is called after all syntax has been processed. These methods take a line as argument and return a processed line. This way, you can create a node that inherits from MarkdownLabel and override these methods in order to implement your custom syntax.
 

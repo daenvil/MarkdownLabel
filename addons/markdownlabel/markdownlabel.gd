@@ -20,6 +20,7 @@ const _ESCAPE_PLACEHOLDER := ";$\uFFFD:%s$;"
 const _ESCAPEABLE_CHARACTERS := "\\*_~`[]()\"<>#-+.!"
 const _ESCAPEABLE_CHARACTERS_REGEX := "[\\\\\\*\\_\\~`\\[\\]\\(\\)\\\"\\<\\>#\\-\\+\\.\\!]"
 const _CHECKBOX_KEY := "markdownlabel-checkbox"
+const _FRONTMATTER_REGEX := r"^(?:(?:---|\+\+\+)\r?\n([\s\S]*?)\r?\n(?:---|\+\+\+)\r?\n)?(?:\r?\n)?([\s\S]*)$"
 
 #region Public:
 ## Emitted when the node does not handle a click on a link. Can be used to execute custom functions when a link is clicked. [param meta] is the link metadata (in a regular link, it would be the URL).
@@ -86,6 +87,7 @@ var _checkbox_id: int = 0
 var _current_line: int = 0
 var _checkbox_record := {}
 var _debug_mode := false
+var _frontmatter := ""
 #endregion
 
 #region Built-in methods:
@@ -160,9 +162,33 @@ func _notification(what: int) -> void:
 #endregion
 
 #region Public methods:
-## Reads the specified file and displays it as markdown.
-func display_file(file_path: String) -> void:
-	markdown_text = FileAccess.get_file_as_string(file_path)
+## Reads the specified file and displays it as markdown.[br][br]
+## If [param handle_frontmatter] is [code]true[/code] (default), any valid YAML or TOML front-matter won't be displayed
+## and will be saved to optionally be later retrieved using [method get_frontmatter].
+## Otherwise, the document will be displayed as-is.
+## Returns a [enum @GlobalScope.Error].
+func display_file(file_path: String, handle_frontmatter: bool = true) -> Error:
+	var result: Error = OK
+	var content: String = FileAccess.get_file_as_string(file_path)
+	if not content:
+		result = FileAccess.get_open_error()
+	if handle_frontmatter and result == OK:
+		var regex := RegEx.create_from_string(_FRONTMATTER_REGEX)
+		var regex_match := regex.search(content)
+		if regex_match:
+			_frontmatter = regex_match.get_string(1).strip_edges()
+			markdown_text = regex_match.get_string(2)
+			return OK
+		else:
+			result = ERR_BUG
+	_frontmatter = ""
+	markdown_text = content
+	return result
+
+## Returns the stored front-matter of the last file that was displayed using [method display_file], or an empty string otherwise.
+func get_frontmatter() -> String:
+	return _frontmatter
+	
 #endregion
 
 #region Private methods:
@@ -176,7 +202,7 @@ func _set_markdown_text(new_text: String) -> void:
 
 func _update() -> void:
 	super.clear()
-	var bbcode_text: String = _convert_markdown(TranslationServer.translate(markdown_text) if can_auto_translate() else markdown_text)
+	var bbcode_text: String = _convert_markdown(TranslationServer.translate(markdown_text) as String if can_auto_translate() else markdown_text)
 	super.parse_bbcode(bbcode_text)
 	queue_redraw()
 
