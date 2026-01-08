@@ -6,10 +6,12 @@
 
 - Support for using the ``text`` property as a shortcut for ``markdown_text`` ([PR#19](https://github.com/daenvil/MarkdownLabel/pull/19) by [betalars](https://github.com/betalars) and [PR#20](https://github.com/daenvil/MarkdownLabel/pull/20), [#2](https://github.com/daenvil/MarkdownLabel/issues/2))
 - Auto-translation when ``markdown_text`` is set to a localization key and the node is set to auto-translate ([PR#18](https://github.com/daenvil/MarkdownLabel/pull/18) by [betalars](https://github.com/betalars))
+- Handling YAML/TOML front-matter when using the ``display_file()`` method. The ``get_frontmatter()`` method can be used afterwards to retrieve it ([#15](https://github.com/daenvil/MarkdownLabel/issues/15)).
 
 ### Changed
 
 - Improved documentation
+- The ``text`` property is no longer stored in scene files, avoiding redundant information
 
 ## 1.3.0 [2025-03-08]
 
