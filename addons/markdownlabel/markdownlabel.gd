@@ -153,6 +153,10 @@ func _get(property: StringName) -> Variant:
 		return markdown_text
 	return null
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED:
+		_update()
+
 #endregion
 
 #region Public methods:
@@ -172,7 +176,8 @@ func _set_markdown_text(new_text: String) -> void:
 
 func _update() -> void:
 	super.clear()
-	super.parse_bbcode(_convert_markdown(markdown_text))
+	var bbcode_text: String = _convert_markdown(TranslationServer.translate(markdown_text) if can_auto_translate() else markdown_text)
+	super.parse_bbcode(bbcode_text)
 	queue_redraw()
 
 func _set_h1_format(new_format: H1Format) -> void:
