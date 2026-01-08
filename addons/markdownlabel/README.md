@@ -90,7 +90,7 @@ Examples:
 Markdown text ................. -> BBCode equivalent
 --------------------------------||------------------
 The following is `in-line code` -> The following is [code]in-line code[/code]
-This is also ``in-line code`` -> The following is [code]in-line code[/code]
+This is also ``in-line code``   -> The is also [code]in-line code[/code]
 
 ~~~                  .......... -> [code]
 This is a            .......... -> This is a
@@ -99,7 +99,7 @@ multiline codeblock  .......... -> multiline codeblock
 
 ```
 
-**Important**: note that in-line code and code blocks won't do anything with Godot's default font, since it doesn't have a monospace variant. As described in [Godot's BBCode reference](https://docs.godotengine.org/en/stable/tutorials/ui/bbcode_in_richtextlabel.html#reference): "The monospaced (`[code]`) tag only works if a custom font is set up in the RichTextLabel node's theme overrides. Otherwise, monospaced text will use the regular font".
+**Important**: note that in-line code and code blocks **won't do anything with Godot's default font**, since it doesn't have a monospace variant. As described in [Godot's BBCode reference](https://docs.godotengine.org/en/stable/tutorials/ui/bbcode_in_richtextlabel.html#reference): *"The monospaced (`[code]`) tag only works if a custom font is set up in the RichTextLabel node's theme overrides. Otherwise, monospaced text will use the regular font"*.
 
 ### Headers
 
@@ -143,8 +143,8 @@ This behavior can be disabled using the `automatic_links` property (enabled by d
 The ``unhandled_link_clicked`` signal can be used to implement custom behavior when clicking a link. It passes the clicked link metadata (which usually would be the URL) as an argument.
 
 ```
-Markdown text .............................. -> BBCode equivalent
----------------------------------------------||------------------
+Markdown text ...................................... -> BBCode equivalent
+-----------------------------------------------------||------------------
 [this is a link](https://example.com) .............. -> [url=https://example.com]this is a link[/url]
 [this is a link](https://example.com "Example page") -> [hint=Example url][url=https://example.com]this is a link[/url][/hint]
 <https://example.com> .............................. -> [url]https://example.com[/url]
