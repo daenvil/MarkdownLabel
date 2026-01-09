@@ -202,9 +202,15 @@ func _set_markdown_text(new_text: String) -> void:
 
 func _update() -> void:
 	super.clear()
-	var bbcode_text: String = _convert_markdown(TranslationServer.translate(markdown_text) as String if can_auto_translate() else markdown_text)
+	var bbcode_text: String = _convert_markdown(TranslationServer.translate(markdown_text) as String if _can_auto_translate() else markdown_text)
 	super.parse_bbcode(bbcode_text)
 	queue_redraw()
+
+func _can_auto_translate() -> bool:
+	var version := Engine.get_version_info()
+	if version.hex >= 0x040300 and has_method("can_auto_translate"):
+		return call("can_auto_translate")
+	return auto_translate
 
 func _set_h1_format(new_format: H1Format) -> void:
 	h1 = new_format

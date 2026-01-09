@@ -279,7 +279,7 @@ Keep in mind that, if you are writing text inside a script, you will have to "do
 
 ### Internationalization
 
-By default, if ``markdown_text`` is set to a translation key, the label will automatically show the corresponding localized text. This is the same behavior as in other control nodes such as ``Label`` and ``RichTextLabel``. This can be disabled by modifying the node's [``auto_translate_mode``](https://docs.godotengine.org/en/stable/classes/class_node.html#class-node-property-auto-translate-mode) property. Read [the official docs on game internationalization](https://docs.godotengine.org/en/stable/tutorials/i18n/internationalizing_games.html) for more information.
+By default, if ``markdown_text`` is set to a translation key, the label will automatically show the corresponding localized text. This is the same behavior as in other control nodes such as ``Label`` and ``RichTextLabel``. This can be disabled by modifying the node's [``auto_translate_mode``](https://docs.godotengine.org/en/stable/classes/class_node.html#class-node-property-auto-translate-mode) property (Godot 4.3+) or the ``auto_translate`` property (Godot 4.2). Read [the official docs on game internationalization](https://docs.godotengine.org/en/stable/tutorials/i18n/internationalizing_games.html) for more information.
 
 ### Advanced usage
 
