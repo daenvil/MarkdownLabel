@@ -60,14 +60,19 @@
 		"title": "Mail autolink"
 	},
 	{
-		"input": "![foo](bar)",
-		"output": "[img]bar[/img]",
+		"input": "![foo](bar.png)",
+		"output": "[img alt=\"foo\"]bar.png[/img]",
 		"title": "Image basic syntax"
 	},
 	{
-		"input": "![foo](bar_baz.png \"foo\")",
-		"output": "[hint=foo][img]bar_baz.png[/img][/hint]",
+		"input": "![foo](foo_bar.png \"bar\")",
+		"output": "[img alt=\"foo\" tooltip=\"bar\"]foo_bar.png[/img]",
 		"title": "Image with tooltip"
+	},
+	{
+		"input": "![](foo.png)",
+		"output": "[img]foo.png[/img]",
+		"title": "Image with no alt text"
 	},
 	{
 		"input": "# Foo\n##Bar\n######  *Baz*\n####### foo",

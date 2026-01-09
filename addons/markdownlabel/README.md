@@ -160,10 +160,11 @@ Images use the same syntax as links but preceded by an exclamation mark (!):
 ```
 Markdown text .............................................. -> BBCode equivalent
 -------------------------------------------------------------||------------------
-![This is an image](res://some/path.png) ................... -> [img]res://some/path.png[/img]
-![This is an image](res://some/path.png "This is a tooltip") -> [hint=This is a tooltip][img]res://some/path.png[/img][/hint]
+![This is an image](res://some/path.png) ................... -> [img alt="This is an image"]res://some/path.png[/img]
+![This is an image](res://some/path.png "This is a tooltip") -> [img alt="This is an image" tooltip="This is a tooltip"]res://some/path.png[/img]
+![](res://some/path.png) ................................... -> [img]res://some/path.png[/img]
 ```
-However, Godot's BBCode doesn't support alt text for images, so what you put inside the square brackets doesn't affect the end result. You can use it for your own clarity, though.
+What you put inside the square brackets will be the image's alt text.
 
 For advanced usage (setting width, height, and other options), use the BBCode `[img]` tag instead, as described in [Godot's BBCode reference](https://docs.godotengine.org/en/stable/tutorials/ui/bbcode_in_richtextlabel.html#reference).
 

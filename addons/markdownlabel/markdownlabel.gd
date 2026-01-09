@@ -499,6 +499,7 @@ func _process_image_syntax(line: String) -> String:
 			if result.get_string()[_text.get_end()] != "(":
 				continue
 			found_proper_match = true
+			var alt_text := result.get_string(1)
 			# Check if link has a title:
 			regex.compile("\\\"(.*?)\\\"")
 			var title_result := regex.search(result.get_string(2))
@@ -508,10 +509,12 @@ func _process_image_syntax(line: String) -> String:
 				title = title_result.get_string(1)
 				url = url.rstrip(" ").trim_suffix(title_result.get_string()).rstrip(" ")
 			url = _escape_chars(url)
-			processed_line = processed_line.erase(_start, _end - _start).insert(_start, "[img]%s[/img]" % url)
-			if title_result and title:
-				processed_line = processed_line.insert(_start + 12 + url.length() + _text.get_string(1).length(), "[/hint]").insert(_start, "[hint=%s]" % title)
-			_debug("... hyperlink: " + result.get_string())
+			processed_line = processed_line.erase(_start, _end - _start).insert(_start, "[img%s%s]%s[/img]" % [
+				" alt=\"%s\"" % alt_text if alt_text else "",
+				" tooltip=\"%s\"" % title if title_result and title else "",
+				url,
+			])
+			_debug("... image: " + result.get_string())
 			break
 		if not found_proper_match:
 			break
