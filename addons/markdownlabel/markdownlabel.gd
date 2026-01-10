@@ -60,20 +60,21 @@ signal task_checkbox_clicked(id: int, line: int, checked: bool, task_string: Str
 @export var enable_checkbox_clicks := true :
 	set(new_value):
 		enable_checkbox_clicks = new_value
-		_update()
+		queue_update()
 ## String that will be displayed for unchecked task list items. Accepts BBCode and Markdown.
 @export var unchecked_item_character := "☐" :
 	set(new_value):
 		unchecked_item_character = new_value
-		_update()
+		queue_update()
 ## String that will be displayed for checked task list items. Accepts BBCode and Markdown.
 @export var checked_item_character := "☑" :
 	set(new_value):
 		checked_item_character = new_value
-		_update()
+		queue_update()
 #endregion
 
 #region Private:
+var _dirty: bool = false
 var _converted_text: String
 var _indent_level: int
 var _escaped_characters_map := {}
@@ -99,12 +100,12 @@ func _init(markdown_text: String = "") -> void:
 		meta_clicked.connect(_on_meta_clicked)
 
 func _ready() -> void:
-	h1.changed.connect(_update)
-	h2.changed.connect(_update)
-	h3.changed.connect(_update)
-	h4.changed.connect(_update)
-	h5.changed.connect(_update)
-	h6.changed.connect(_update)
+	h1.changed.connect(queue_update)
+	h2.changed.connect(queue_update)
+	h3.changed.connect(queue_update)
+	h4.changed.connect(queue_update)
+	h5.changed.connect(queue_update)
+	h6.changed.connect(queue_update)
 	if Engine.is_editor_hint():
 		bbcode_enabled = true
 	#else:
@@ -157,6 +158,8 @@ func _get(property: StringName) -> Variant:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED:
+		queue_update()
+	elif what == NOTIFICATION_DRAW:
 		_update()
 
 #endregion
@@ -188,23 +191,29 @@ func display_file(file_path: String, handle_frontmatter: bool = true) -> Error:
 ## Returns the stored front-matter of the last file that was displayed using [method display_file], or an empty string otherwise.
 func get_frontmatter() -> String:
 	return _frontmatter
-	
+
+## Requests a redraw of the label, reprocessing the Markdown text.
+func queue_update() -> void:
+	_dirty = true
+	queue_redraw()
+
 #endregion
 
 #region Private methods:
 func _set_text(new_text: String) -> void:
 	markdown_text = new_text
-	_update()
+	queue_update()
 
 func _set_markdown_text(new_text: String) -> void:
 	markdown_text = new_text
-	_update()
+	queue_update()
 
 func _update() -> void:
-	super.clear()
-	var bbcode_text: String = _convert_markdown(TranslationServer.translate(markdown_text) as String if _can_auto_translate() else markdown_text)
-	super.parse_bbcode(bbcode_text)
-	queue_redraw()
+	if _dirty:
+		_dirty = false
+		super.clear()
+		var bbcode_text: String = _convert_markdown(TranslationServer.translate(markdown_text) as String if _can_auto_translate() else markdown_text)
+		super.parse_bbcode(bbcode_text)
 
 func _can_auto_translate() -> bool:
 	var version := Engine.get_version_info()
@@ -214,27 +223,27 @@ func _can_auto_translate() -> bool:
 
 func _set_h1_format(new_format: H1Format) -> void:
 	h1 = new_format
-	_update()
+	queue_update()
 
 func _set_h2_format(new_format: H2Format) -> void:
 	h2 = new_format
-	_update()
+	queue_update()
 
 func _set_h3_format(new_format: H3Format) -> void:
 	h3 = new_format
-	_update()
+	queue_update()
 
 func _set_h4_format(new_format: H4Format) -> void:
 	h4 = new_format
-	_update()
+	queue_update()
 
 func _set_h5_format(new_format: H5Format) -> void:
 	h5 = new_format
-	_update()
+	queue_update()
 
 func _set_h6_format(new_format: H6Format) -> void:
 	h6 = new_format
-	_update()
+	queue_update()
 
 func _convert_markdown(source_text: String = "") -> String:
 	if not bbcode_enabled:
