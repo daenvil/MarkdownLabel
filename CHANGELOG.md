@@ -8,12 +8,17 @@
 - Auto-translation when ``markdown_text`` is set to a localization key and the node is set to auto-translate ([PR#18](https://github.com/daenvil/MarkdownLabel/pull/18) by [betalars](https://github.com/betalars))
 - Handling YAML/TOML front-matter when using the ``display_file()`` method. The ``get_frontmatter()`` method can be used afterwards to retrieve it ([#15](https://github.com/daenvil/MarkdownLabel/issues/15)).
 - Alt text for images
+- Horizontal rules / thematic breaks, with customization options (exclusive for Godot 4.5+)
 
 ### Changed
 
 - Improved documentation
 - The ``text`` property is no longer stored in scene files, avoiding redundant information
 - Image tooltips now use the ``tooltip`` option instead of the ``hint`` flag
+
+### Fixed
+
+- Markdown conversion could be executed multiple times in a single frame. Now it uses a dirty flag system to only be executed when it's strictly needed.
 
 ## 1.3.0 [2025-03-08]
 

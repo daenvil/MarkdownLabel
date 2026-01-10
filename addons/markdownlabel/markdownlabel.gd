@@ -71,6 +71,29 @@ signal task_checkbox_clicked(id: int, line: int, checked: bool, task_string: Str
 	set(new_value):
 		checked_item_character = new_value
 		queue_update()
+
+@export_group("Horizontal rules", "hr_")
+## Height of horizontal rules.
+@export_range(0, 99, 1, "suffix:px") var hr_height: int = 2 :
+	set(new_value):
+		hr_height = new_value
+		queue_update()
+## Width of horizontal rules, as a percentage of the label's width.
+@export_range(0, 100, 1, "suffix:%") var hr_width: float = 90 :
+	set(new_value):
+		hr_width = new_value
+		queue_update()
+## Alignment of horizontal rules.
+@export_enum("left", "center", "right") var hr_alignment: String = "center" :
+	set(new_value):
+		hr_alignment = new_value
+		queue_update()
+## Color of horizontal rules.
+@export var hr_color: Color = Color.WHITE :
+	set(new_value):
+		hr_color = new_value
+		queue_update()
+
 #endregion
 
 #region Private:
@@ -323,6 +346,7 @@ func _convert_markdown(source_text: String = "") -> String:
 		_processed_line = _process_link_syntax(_processed_line)
 		_processed_line = _process_text_formatting_syntax(_processed_line)
 		_processed_line = _process_header_syntax(_processed_line)
+		_processed_line = _process_hr_syntax(_processed_line)
 		_processed_line = _process_custom_syntax(_processed_line)
 		
 		# Re-insert escaped characters:
@@ -679,6 +703,23 @@ func _process_header_syntax(line: String) -> String:
 		processed_line = processed_line.insert(_end - (n + n_spaces) + opening_tags.length(), _get_header_tags(header_format, true))
 		_debug("... header level %d" % n)
 		_header_anchor_paragraph[_get_header_reference(result.get_string())] = _current_paragraph
+	return processed_line
+
+func _process_hr_syntax(line: String) -> String:
+	var version := Engine.get_version_info()
+	if version.hex < 0x040500:
+		return line
+	var processed_line := line
+	var regex := RegEx.create_from_string(r"^[ ]{0,3}([\-_*])\1{2,}\s*$")
+	var result := regex.search(processed_line)
+	if result:
+		processed_line = "[hr height=%d width=%d%% align=%s color=%s]" % [
+			hr_height,
+			hr_width,
+			hr_alignment,
+			hr_color.to_html(),
+		]
+		_debug("... horizontal rule")
 	return processed_line
 
 func _escape_bbcode(source: String) -> String:
