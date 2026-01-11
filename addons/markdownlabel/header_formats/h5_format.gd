@@ -14,6 +14,8 @@ extends Resource
 @export var override_font_color: bool = false : set = _set_override_font_color
 ## Custom font color to apply to this header level. Ignored if [code]override_font_color[/code] is disabled.
 @export var font_color: Color = Color.WHITE : set = _set_font_color
+## When enabled, a horizontal rule will be drawn beneath all headers of this level (only in Godot 4.5+). Its height, width, and color will be defined by the MarkdownLabel's properties, but it will always be centered left.
+@export var draw_horizontal_rule: bool = false : set = _set_draw_horizontal_rule
 
 func _init() -> void:
 	resource_local_to_scene = true
@@ -40,4 +42,8 @@ func _set_is_italic(new_is_italic: bool) -> void:
 
 func _set_is_underlined(new_is_underlined: bool) -> void:
 	is_underlined = new_is_underlined
+	emit_changed()
+
+func _set_draw_horizontal_rule(new_draw_horizontal_rule: bool) -> void:
+	draw_horizontal_rule = new_draw_horizontal_rule
 	emit_changed()

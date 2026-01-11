@@ -156,9 +156,9 @@ Markdown text ...................................... -> BBCode equivalent
 
 ### Horizontal rules
 
-***Note: this feature is exclusive for Godot 4.5+.***
+_**Note:** this feature is exclusive for **Godot 4.5+.**_
 
-Write a line with just three (or more) matching ``-``, ``_``, or ``*`` to form a a horizontal rule (also called a thematic break).
+Write a line with just three (or more) matching ``-``, ``_``, or ``*`` to form a horizontal rule (also called a thematic break).
 
 You can customize the height, width, alignment, and color of all horizontal rules in the label by modifying its ``hr_height``, ``hr_width``, ``hr_alignment``, and ``hr_color`` properties (by default they are 2 px high, 90% wide, center-aligned, and white). If you need to customize these properties individually for each rule, then you can just use the ``[hr]`` BBCode tag.
 
