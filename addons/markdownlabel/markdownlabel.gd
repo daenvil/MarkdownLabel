@@ -131,8 +131,10 @@ func _ready() -> void:
 	h6.changed.connect(queue_update)
 	if Engine.is_editor_hint():
 		bbcode_enabled = true
-	#else:
-		#pass
+
+func _process(_delta: float) -> void:
+	if _dirty:
+		_update()
 
 func _on_meta_clicked(meta: Variant) -> void:
 	if typeof(meta) != TYPE_STRING:
@@ -182,8 +184,6 @@ func _get(property: StringName) -> Variant:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED:
 		queue_update()
-	elif what == NOTIFICATION_DRAW:
-		_update()
 
 #endregion
 
@@ -232,11 +232,10 @@ func _set_markdown_text(new_text: String) -> void:
 	queue_update()
 
 func _update() -> void:
-	if _dirty:
-		_dirty = false
-		super.clear()
-		var bbcode_text: String = _convert_markdown(TranslationServer.translate(markdown_text) as String if _can_auto_translate() else markdown_text)
-		super.parse_bbcode(bbcode_text)
+	_dirty = false
+	super.clear()
+	var bbcode_text: String = _convert_markdown(TranslationServer.translate(markdown_text) as String if _can_auto_translate() else markdown_text)
+	super.parse_bbcode(bbcode_text)
 
 func _can_auto_translate() -> bool:
 	var version := Engine.get_version_info()

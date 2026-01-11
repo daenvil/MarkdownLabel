@@ -33,27 +33,27 @@ script = ExtResource("7_42de6")
 resource_local_to_scene = true
 script = ExtResource("8_y8fds")
 
-[sub_resource type="Resource" id="Resource_r7ev3"]
+[sub_resource type="Resource" id="Resource_trsiu"]
 resource_local_to_scene = true
 script = ExtResource("3_kbjha")
 
-[sub_resource type="Resource" id="Resource_qh6ic"]
+[sub_resource type="Resource" id="Resource_dn6jj"]
 resource_local_to_scene = true
 script = ExtResource("4_tqhuu")
 
-[sub_resource type="Resource" id="Resource_qx73p"]
+[sub_resource type="Resource" id="Resource_udkf7"]
 resource_local_to_scene = true
 script = ExtResource("5_us0p7")
 
-[sub_resource type="Resource" id="Resource_yx0wh"]
+[sub_resource type="Resource" id="Resource_uvlpk"]
 resource_local_to_scene = true
 script = ExtResource("6_8ublj")
 
-[sub_resource type="Resource" id="Resource_1ovcl"]
+[sub_resource type="Resource" id="Resource_55s74"]
 resource_local_to_scene = true
 script = ExtResource("7_42de6")
 
-[sub_resource type="Resource" id="Resource_fj0e0"]
+[sub_resource type="Resource" id="Resource_evn0a"]
 resource_local_to_scene = true
 script = ExtResource("8_y8fds")
 
@@ -98,9 +98,10 @@ layout_mode = 2
 size_flags_vertical = 3
 bbcode_enabled = true
 script = ExtResource("2_opcio")
-h1 = SubResource("Resource_r7ev3")
-h2 = SubResource("Resource_qh6ic")
-h3 = SubResource("Resource_qx73p")
-h4 = SubResource("Resource_yx0wh")
-h5 = SubResource("Resource_1ovcl")
-h6 = SubResource("Resource_fj0e0")
+h1 = SubResource("Resource_trsiu")
+h2 = SubResource("Resource_dn6jj")
+h3 = SubResource("Resource_udkf7")
+h4 = SubResource("Resource_uvlpk")
+h5 = SubResource("Resource_55s74")
+h6 = SubResource("Resource_evn0a")
+metadata/_custom_type_script = "uid://dbap0gqox0ty1"
