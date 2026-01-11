@@ -344,9 +344,9 @@ func _convert_markdown(source_text: String = "") -> String:
 		_processed_line = _process_inline_code_syntax(_processed_line)
 		_processed_line = _process_image_syntax(_processed_line)
 		_processed_line = _process_link_syntax(_processed_line)
+		_processed_line = _process_hr_syntax(_processed_line)
 		_processed_line = _process_text_formatting_syntax(_processed_line)
 		_processed_line = _process_header_syntax(_processed_line)
-		_processed_line = _process_hr_syntax(_processed_line)
 		_processed_line = _process_custom_syntax(_processed_line)
 		
 		# Re-insert escaped characters:

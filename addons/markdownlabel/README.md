@@ -13,6 +13,7 @@ Compatible with **Godot 4.2+**. Contains uid files for Godot 4.4+.
   - [Code](#code)
   - [Headers](#headers)
   - [Links](#links)
+  - [Horizontal rules](#horizontal-rules)
   - [Images](#images)
   - [Lists](#lists)
     - [Task list items (checkboxes)](#task-list-items)
@@ -151,6 +152,22 @@ Markdown text ...................................... -> BBCode equivalent
 [this is a link](https://example.com "Example page") -> [hint=Example url][url=https://example.com]this is a link[/url][/hint]
 <https://example.com> .............................. -> [url]https://example.com[/url]
 <mail@example.com> ................................. -> [url=mailto:mail@example.com]mail@example.com[/url]
+```
+
+### Horizontal rules
+
+***Note: this feature is exclusive for Godot 4.5+.***
+
+Write a line with just three (or more) matching ``-``, ``_``, or ``*`` to form a a horizontal rule (also called a thematic break).
+
+You can customize the height, width, alignment, and color of all horizontal rules in the label by modifying its ``hr_height``, ``hr_width``, ``hr_alignment``, and ``hr_color`` properties (by default they are 2 px high, 90% wide, center-aligned, and white). If you need to customize these properties individually for each rule, then you can just use the ``[hr]`` BBCode tag.
+
+```
+Markdown text  -> BBCode equivalent
+---------------||------------------
+---            -> [hr height=2 width=90% align=center color=ffffffff]
+ ____          -> [hr height=2 width=90% align=center color=ffffffff]
+***            -> [hr height=2 width=90% align=center color=ffffffff]
 ```
 
 ### Images
@@ -303,7 +320,6 @@ If encountering any unreported bug or unexpected bahaviour, please ensure that y
 
 The following Markdown syntax elements are not supported because Godot's BBCode does not support them:
 - Quotes
-- Horizontal rules
 - Reference links
 
 ### Performance
