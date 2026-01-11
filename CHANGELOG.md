@@ -11,7 +11,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Handling YAML/TOML front-matter when using the ``display_file()`` method. The ``get_frontmatter()`` method can be used afterwards to retrieve it ([#15](https://github.com/daenvil/MarkdownLabel/issues/15)).
 - Alt text for images
 - Horizontal rules / thematic breaks, with customization options (exclusive for Godot 4.5+)
-  - Option on each header level's format to automatically draw horizontal rule below headers
+  - Option on each header level's format to automatically draw horizontal rule below headers ([#17](https://github.com/daenvil/MarkdownLabel/issues/17))
 
 ### Changed
 
